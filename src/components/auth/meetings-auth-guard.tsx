@@ -2,9 +2,11 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { getToken } from "@/lib/api/token";
 
 export function MeetingsAuthGuard({ children }: { children: React.ReactNode }) {
+  const t = useTranslations("auth.guard");
   const router = useRouter();
   const [checked, setChecked] = useState(false);
 
@@ -21,7 +23,7 @@ export function MeetingsAuthGuard({ children }: { children: React.ReactNode }) {
   if (!checked) {
     return (
       <div className="flex flex-1 items-center justify-center py-24 text-muted-foreground">
-        Checking authentication…
+        {t("checking")}
       </div>
     );
   }

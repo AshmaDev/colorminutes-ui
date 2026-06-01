@@ -45,17 +45,16 @@ export const meetingsApi = {
     signal?: AbortSignal;
   }): Promise<Meeting> {
     const formData = new FormData();
-    formData.append("file", file);
     formData.append("sourceType", sourceType);
     if (title) {
       formData.append("title", title);
     }
+    formData.append("file", file);
 
     try {
       const response = await axios.post(`${getApiUrl()}/meetings`, formData, {
         headers: {
           ...getAuthHeaders(),
-          "Content-Type": "multipart/form-data",
         },
         maxContentLength: 524_288_000,
         maxBodyLength: 524_288_000,
@@ -82,9 +81,16 @@ export const meetingsApi = {
   },
 
   async updateTitle(id: string, title: string): Promise<Meeting> {
+    return this.updateMeeting(id, { title });
+  },
+
+  async updateMeeting(
+    id: string,
+    data: { title?: string; content?: string }
+  ): Promise<Meeting> {
     try {
       return meetingSchema.parse(
-        await api.patch(`meetings/${id}`, { json: { title } }).json()
+        await api.patch(`meetings/${id}`, { json: data }).json()
       );
     } catch (error) {
       throw new Error(await parseApiError(error));

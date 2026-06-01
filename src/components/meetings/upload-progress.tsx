@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
 
 type UploadProgressProps = {
@@ -24,6 +25,7 @@ export function UploadProgress({
   total,
   onCancel,
 }: UploadProgressProps) {
+  const t = useTranslations("uploadProgress");
   const isIndeterminate = percent === null;
 
   return (
@@ -35,7 +37,7 @@ export function UploadProgress({
     >
       <div className="w-full max-w-md rounded-2xl border border-border/80 bg-white p-6 shadow-lg">
         <h2 id="upload-progress-title" className="text-lg font-semibold">
-          Uploading…
+          {t("title")}
         </h2>
         <p className="mt-1 truncate text-sm text-muted-foreground">{fileName}</p>
 
@@ -56,13 +58,11 @@ export function UploadProgress({
               {formatBytes(loaded)}
               {total ? ` of ${formatBytes(total)}` : ""}
             </span>
-            <span>{isIndeterminate ? "Preparing…" : `${percent}%`}</span>
+            <span>{isIndeterminate ? t("preparing") : `${percent}%`}</span>
           </div>
         </div>
 
-        <p className="mt-4 text-xs text-muted-foreground">
-          Large recordings may take several minutes. Please keep this tab open.
-        </p>
+        <p className="mt-4 text-xs text-muted-foreground">{t("hint")}</p>
 
         {onCancel && (
           <button
@@ -70,7 +70,7 @@ export function UploadProgress({
             onClick={onCancel}
             className="mt-4 text-sm text-muted-foreground underline-offset-4 hover:underline"
           >
-            Cancel upload
+            {t("cancel")}
           </button>
         )}
       </div>

@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useMutation } from "@tanstack/react-query";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -17,6 +18,8 @@ import {
 import { useAuth } from "@/providers/auth-provider";
 
 export function RegisterForm() {
+  const t = useTranslations("auth.register");
+  const tc = useTranslations("common");
   const router = useRouter();
   const { register } = useAuth();
   const [error, setError] = useState<string | null>(null);
@@ -43,31 +46,29 @@ export function RegisterForm() {
   return (
     <Card className="w-full max-w-md border-border/80 shadow-sm">
       <CardHeader>
-        <CardTitle className="text-xl">Create your account</CardTitle>
-        <CardDescription>
-          Start turning board meetings into color-coded minutes.
-        </CardDescription>
+        <CardTitle className="text-xl">{t("title")}</CardTitle>
+        <CardDescription>{t("description")}</CardDescription>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
+            <Label htmlFor="email">{tc("email")}</Label>
             <Input
               id="email"
               name="email"
               type="email"
-              placeholder="secretary@youroakwoodhoa.org"
+              placeholder={tc("emailPlaceholder")}
               autoComplete="email"
               required
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="password">Password</Label>
+            <Label htmlFor="password">{tc("password")}</Label>
             <Input
               id="password"
               name="password"
               type="password"
-              placeholder="At least 8 characters"
+              placeholder={tc("passwordMinPlaceholder")}
               autoComplete="new-password"
               minLength={8}
               required
@@ -84,12 +85,12 @@ export function RegisterForm() {
             size="lg"
             disabled={mutation.isPending}
           >
-            {mutation.isPending ? "Creating account…" : "Create account"}
+            {mutation.isPending ? t("creating") : t("createAccount")}
           </Button>
           <p className="text-center text-sm text-muted-foreground">
-            Already have an account?{" "}
+            {t("hasAccount")}{" "}
             <Link href="/login" className="font-medium text-foreground underline-offset-4 hover:underline">
-              Sign in
+              {t("signIn")}
             </Link>
           </p>
         </form>

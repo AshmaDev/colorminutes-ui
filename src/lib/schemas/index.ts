@@ -1,7 +1,13 @@
 import { z } from "zod";
 
 export const sourceTypeSchema = z.enum(["record", "upload", "notes"]);
-export const meetingStatusSchema = z.enum(["draft", "uploaded"]);
+export const meetingStatusSchema = z.enum([
+  "draft",
+  "uploaded",
+  "processing",
+  "ready",
+  "failed",
+]);
 
 export const userSchema = z.object({
   id: z.string().uuid(),
@@ -22,6 +28,9 @@ export const meetingSchema = z.object({
   title: z.string().nullable(),
   sourceType: sourceTypeSchema,
   status: meetingStatusSchema,
+  content: z.string().nullable(),
+  processingError: z.string().nullable(),
+  sourceFilename: z.string().nullable(),
   createdAt: z.string(),
   updatedAt: z.string(),
   file: meetingFileSchema.nullable(),
@@ -51,9 +60,14 @@ export const resetPasswordInputSchema = z.object({
   password: z.string().min(8, "Password must be at least 8 characters."),
 });
 
-export const patchMeetingInputSchema = z.object({
-  title: z.string().min(1).max(500),
-});
+export const patchMeetingInputSchema = z
+  .object({
+    title: z.string().min(1).max(500).optional(),
+    content: z.string().max(500_000).optional(),
+  })
+  .refine((value) => value.title !== undefined || value.content !== undefined, {
+    message: "At least one of title or content is required.",
+  });
 
 export const messageResponseSchema = z.object({
   message: z.string(),

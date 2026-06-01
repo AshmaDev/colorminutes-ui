@@ -1,0 +1,198 @@
+{
+  "metadata": {
+    "title": "ColorMinutes",
+    "description": "Turn meetings into clear, color-coded minutes with motions, votes, and action items."
+  },
+  "common": {
+    "email": "Email",
+    "password": "Password",
+    "newPassword": "New password",
+    "cancel": "Cancel",
+    "save": "Save",
+    "saved": "Saved",
+    "saving": "Saving…",
+    "emailPlaceholder": "you@example.com",
+    "passwordPlaceholder": "••••••••",
+    "passwordMinPlaceholder": "At least 8 characters",
+    "genericError": "Something went wrong. Please try again.",
+    "uploadCancelled": "Upload cancelled."
+  },
+  "home": {
+    "badge": "Meeting minutes, in full color",
+    "headline": "Turn every meeting into",
+    "headlineHighlight": "clear, colorful minutes",
+    "description": "Upload a meeting recording or notes, and ColorMinutes pulls out motions, votes, and action items—minutes your team can read at a glance.",
+    "getStarted": "Get started",
+    "logIn": "Log in",
+    "goToMeetings": "Go to meetings",
+    "addMeeting": "Add meeting",
+    "previewTitle": "Product team sync — March — 58 min",
+    "previewVote": "Vote:",
+    "previewVoteText": "Approve Q2 roadmap and staffing plan.",
+    "previewAction": "Action:",
+    "previewActionText": "PM to circulate revised timeline by Friday.",
+    "previewNote": "Note:",
+    "previewNoteText": "Budget discussion deferred to next week's finance review."
+  },
+  "header": {
+    "logIn": "Log in",
+    "logOut": "Log out",
+    "meetings": "Meetings"
+  },
+  "footer": {
+    "copyright": "© {year} ColorMinutes. All rights reserved."
+  },
+  "auth": {
+    "backToHome": "← Back to home",
+    "login": {
+      "title": "Welcome back",
+      "description": "Sign in to manage your meeting minutes.",
+      "forgotPassword": "Forgot password?",
+      "signingIn": "Signing in…",
+      "signIn": "Sign in",
+      "noAccount": "No account?",
+      "createOne": "Create one"
+    },
+    "register": {
+      "title": "Create your account",
+      "description": "Start turning meetings into color-coded minutes.",
+      "creating": "Creating account…",
+      "createAccount": "Create account",
+      "hasAccount": "Already have an account?",
+      "signIn": "Sign in"
+    },
+    "forgotPassword": {
+      "title": "Reset your password",
+      "description": "Enter your email and we'll send you a reset link. In development, check the API console for the link.",
+      "sending": "Sending…",
+      "sendLink": "Send reset link",
+      "backToSignIn": "Back to sign in"
+    },
+    "resetPassword": {
+      "invalidTitle": "Invalid reset link",
+      "invalidDescription": "This password reset link is missing a token. Request a new one.",
+      "requestNewLink": "Request new link",
+      "title": "Choose a new password",
+      "description": "Enter a new password for your account.",
+      "missingToken": "Missing reset token. Use the link from your email.",
+      "updating": "Updating…",
+      "updatePassword": "Update password"
+    },
+    "guard": {
+      "checking": "Checking authentication…"
+    }
+  },
+  "meetings": {
+    "title": "Meetings",
+    "description": "Upload a recording or notes to generate color-coded minutes.",
+    "uploadMeeting": "Add meeting",
+    "loading": "Loading meetings…",
+    "loadError": "Unable to load meetings. Please try again.",
+    "empty": "No meetings yet. Add your first recording or notes to generate minutes.",
+    "untitled": "Untitled meeting",
+    "backToList": "← Meetings",
+    "backToMeetings": "Back to meetings",
+    "editTitle": "Edit meeting",
+    "editDescription": {
+      "processing": "Your file is being transcribed or processed.",
+      "ready": "Review and edit the extracted content below.",
+      "failed": "Processing failed. You can update the title and retry by re-uploading.",
+      "default": "Your meeting details."
+    },
+    "meetingTitle": "Meeting title",
+    "titlePlaceholder": "Team sync — March 2026",
+    "saveTitle": "Save title",
+    "meetingContent": "Meeting content",
+    "contentPlaceholder": "Extracted text will appear here.",
+    "saveContent": "Save content",
+    "file": "File",
+    "size": "Size",
+    "uploaded": "Uploaded",
+    "status": "Status",
+    "processingBanner": "Transcribing or extracting text from your file…",
+    "loadingMeeting": "Loading meeting…",
+    "notFound": "Meeting not found.",
+    "statusLabels": {
+      "draft": "Draft",
+      "uploaded": "Uploaded",
+      "processing": "Processing",
+      "ready": "Ready",
+      "failed": "Failed"
+    },
+    "sourceLabels": {
+      "record": "Browser recording",
+      "upload": "Uploaded recording",
+      "notes": "Uploaded notes"
+    }
+  },
+  "upload": {
+    "inputTypeAria": "Meeting input type",
+    "formTypes": {
+      "record": {
+        "label": "Record meeting",
+        "description": "Capture audio in your browser"
+      },
+      "upload": {
+        "label": "Upload recording",
+        "description": "MP3 or MP4 file"
+      },
+      "notes": {
+        "label": "Upload notes",
+        "description": "PDF document"
+      }
+    },
+    "copy": {
+      "record": {
+        "title": "Record meeting",
+        "description": "Use your microphone to record the meeting directly in the browser. We'll turn it into color-coded minutes.",
+        "submit": "Start recording",
+        "submitting": "Starting…"
+      },
+      "upload": {
+        "title": "Upload meeting recording",
+        "description": "Add an MP3 or MP4 of your meeting. We'll produce color-coded minutes with motions, votes, and action items.",
+        "submit": "Upload recording",
+        "submitting": "Uploading…"
+      },
+      "notes": {
+        "title": "Upload meeting notes",
+        "description": "Add a PDF of existing meeting notes. We'll extract and color-code motions, votes, and action items.",
+        "submit": "Upload notes",
+        "submitting": "Uploading…"
+      }
+    },
+    "audioFile": "Audio or video file",
+    "pdfFile": "PDF file",
+    "clickToBrowse": "Click to browse",
+    "dropAudio": "or drag and drop MP3 or MP4",
+    "dropPdf": "or drag and drop your PDF",
+    "errors": {
+      "choosePdf": "Please choose a PDF file to upload.",
+      "chooseAudio": "Please choose an MP3 or MP4 file to upload.",
+      "audioOnly": "Only MP3 and MP4 files are supported.",
+      "pdfOnly": "Only PDF files are supported."
+    }
+  },
+  "recording": {
+    "idleHint": "Record your meeting using your device microphone. You can record up to 1 hour.",
+    "remaining": "{time} remaining",
+    "complete": "Recording complete ({time}). Save to upload.",
+    "micDenied": "Microphone access was denied or is unavailable.",
+    "noRecording": "No recording available. Record audio before saving.",
+    "start": "Start recording",
+    "pause": "Pause",
+    "resume": "Resume",
+    "stop": "Stop",
+    "save": "Save recording"
+  },
+  "uploadProgress": {
+    "title": "Uploading…",
+    "preparing": "Preparing…",
+    "hint": "Large recordings may take several minutes. Please keep this tab open.",
+    "cancel": "Cancel upload"
+  },
+  "validation": {
+    "passwordMin": "Password must be at least 8 characters.",
+    "patchRequired": "At least one of title or content is required."
+  }
+}

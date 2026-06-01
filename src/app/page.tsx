@@ -1,9 +1,11 @@
-import Link from "next/link";
+import { getTranslations } from "next-intl/server";
 import { SiteHeader } from "@/components/layout/site-header";
 import { SiteFooter } from "@/components/layout/site-footer";
-import { Button } from "@/components/ui/button";
+import { HomeHeroActions } from "@/components/home/home-hero-actions";
 
-export default function HomePage() {
+export default async function HomePage() {
+  const t = await getTranslations("home");
+
   return (
     <div className="flex min-h-screen flex-col bg-background">
       <SiteHeader />
@@ -26,27 +28,18 @@ export default function HomePage() {
             <div className="space-y-6">
               <p className="inline-flex items-center gap-2 rounded-full border border-primary/40 bg-primary/15 px-3 py-1 text-sm font-medium text-foreground">
                 <span className="size-2 rounded-full bg-primary" />
-                HOA board meeting minutes, in full color
+                {t("badge")}
               </p>
               <h1 className="text-4xl font-semibold leading-tight tracking-tight text-foreground sm:text-5xl lg:text-6xl">
-                Turn every board meeting into{" "}
+                {t("headline")}{" "}
                 <span className="bg-gradient-to-r from-brand-peach via-brand-lilac to-brand-sage bg-clip-text text-transparent">
-                  clear, colorful minutes
+                  {t("headlineHighlight")}
                 </span>
               </h1>
               <p className="max-w-xl text-lg text-muted-foreground">
-                Upload your board meeting recording, and ColorMinutes pulls out
-                motions, votes, and action items—minutes your board and
-                homeowners can read at a glance.
+                {t("description")}
               </p>
-              <div className="flex flex-wrap gap-3 pt-2">
-                <Button render={<Link href="/login" />} size="lg">
-                  Get started
-                </Button>
-                <Button render={<Link href="/login" />} variant="outline" size="lg">
-                  Log in
-                </Button>
-              </div>
+              <HomeHeroActions />
             </div>
 
             <div className="relative mx-auto w-full max-w-md lg:max-w-none">
@@ -60,19 +53,19 @@ export default function HomePage() {
                 </div>
                 <div className="space-y-3 rounded-xl bg-muted/40 p-4">
                   <p className="text-sm font-medium text-foreground">
-                    Oakwood HOA — March board meeting — 58 min
+                    {t("previewTitle")}
                   </p>
                   <p className="text-sm text-muted-foreground">
-                    <span className="font-medium text-brand-peach">Vote:</span>{" "}
-                    Approve 2026 landscape contract with GreenPath ($12,400).
+                    <span className="font-medium text-brand-peach">{t("previewVote")}</span>{" "}
+                    {t("previewVoteText")}
                   </p>
                   <p className="text-sm text-muted-foreground">
-                    <span className="font-medium text-brand-sage">Action:</span>{" "}
-                    Treasurer to publish Q1 assessment notice by April 1.
+                    <span className="font-medium text-brand-sage">{t("previewAction")}</span>{" "}
+                    {t("previewActionText")}
                   </p>
                   <p className="text-sm text-muted-foreground">
-                    <span className="font-medium text-brand-lilac">Note:</span>{" "}
-                    Parking policy revision tabled until April meeting.
+                    <span className="font-medium text-brand-lilac">{t("previewNote")}</span>{" "}
+                    {t("previewNoteText")}
                   </p>
                 </div>
               </div>

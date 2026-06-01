@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense } from "react";
 import { useMutation } from "@tanstack/react-query";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -18,6 +19,8 @@ import {
 import { useAuth } from "@/providers/auth-provider";
 
 function LoginFormInner() {
+  const t = useTranslations("auth.login");
+  const tc = useTranslations("common");
   const router = useRouter();
   const searchParams = useSearchParams();
   const { login } = useAuth();
@@ -46,39 +49,37 @@ function LoginFormInner() {
   return (
     <Card className="w-full max-w-md border-border/80 shadow-sm">
       <CardHeader>
-        <CardTitle className="text-xl">Welcome back</CardTitle>
-        <CardDescription>
-          Sign in to manage your HOA board meeting minutes.
-        </CardDescription>
+        <CardTitle className="text-xl">{t("title")}</CardTitle>
+        <CardDescription>{t("description")}</CardDescription>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
+            <Label htmlFor="email">{tc("email")}</Label>
             <Input
               id="email"
               name="email"
               type="email"
-              placeholder="secretary@youroakwoodhoa.org"
+              placeholder={tc("emailPlaceholder")}
               autoComplete="email"
               required
             />
           </div>
           <div className="space-y-2">
             <div className="flex items-center justify-between">
-              <Label htmlFor="password">Password</Label>
+              <Label htmlFor="password">{tc("password")}</Label>
               <Link
                 href="/forgot-password"
                 className="text-xs text-muted-foreground underline-offset-4 hover:underline"
               >
-                Forgot password?
+                {t("forgotPassword")}
               </Link>
             </div>
             <Input
               id="password"
               name="password"
               type="password"
-              placeholder="••••••••"
+              placeholder={tc("passwordPlaceholder")}
               autoComplete="current-password"
               required
             />
@@ -94,12 +95,12 @@ function LoginFormInner() {
             size="lg"
             disabled={mutation.isPending}
           >
-            {mutation.isPending ? "Signing in…" : "Sign in"}
+            {mutation.isPending ? t("signingIn") : t("signIn")}
           </Button>
           <p className="text-center text-sm text-muted-foreground">
-            No account?{" "}
+            {t("noAccount")}{" "}
             <Link href="/register" className="font-medium text-foreground underline-offset-4 hover:underline">
-              Create one
+              {t("createOne")}
             </Link>
           </p>
         </form>

@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useMutation } from "@tanstack/react-query";
+import { useTranslations } from "next-intl";
 import { Mic, Pause, Play, Square } from "lucide-react";
 import { meetingsApi } from "@/lib/api/meetings";
 import { Button } from "@/components/ui/button";
@@ -23,6 +24,8 @@ function formatDuration(seconds: number): string {
 }
 
 export function RecordingPanel() {
+  const t = useTranslations("recording");
+  const tc = useTranslations("common");
   const router = useRouter();
   const [state, setState] = useState<RecordingState>("idle");
   const [elapsed, setElapsed] = useState(0);
@@ -78,7 +81,11 @@ export function RecordingPanel() {
       router.push(`/meetings/${meeting.id}/edit`);
     },
     onError: (err: Error) => {
-      setError(err.message);
+      setError(
+        err.message === "Upload cancelled."
+          ? tc("uploadCancelled")
+          : err.message
+      );
       setState("stopped");
       setUploadFileName(null);
     },
@@ -139,7 +146,7 @@ export function RecordingPanel() {
       setState("recording");
       startTimer();
     } catch {
-      setError("Microphone access was denied or is unavailable.");
+      setError(t("micDenied"));
     }
   }
 
@@ -161,7 +168,7 @@ export function RecordingPanel() {
   function handleSave() {
     const blob = blobRef.current;
     if (!blob || blob.size === 0) {
-      setError("No recording available. Record audio before saving.");
+      setError(t("noRecording"));
       return;
     }
     uploadMutation.mutate(blob);
@@ -195,8 +202,7 @@ export function RecordingPanel() {
 
           {state === "idle" && (
             <p className="max-w-xs text-center text-sm text-muted-foreground">
-              Record your HOA board meeting using your device microphone. You can
-              record up to 1 hour.
+              {t("idleHint")}
             </p>
           )}
 
@@ -206,14 +212,14 @@ export function RecordingPanel() {
                 {formatDuration(elapsed)}
               </p>
               <p className="mt-1 text-xs text-muted-foreground">
-                {formatDuration(remaining)} remaining
+                {t("remaining", { time: formatDuration(remaining) })}
               </p>
             </div>
           )}
 
           {state === "stopped" && (
             <p className="text-center text-sm text-muted-foreground">
-              Recording complete ({formatDuration(elapsed)}). Save to upload.
+              {t("complete", { time: formatDuration(elapsed) })}
             </p>
           )}
 
@@ -227,7 +233,7 @@ export function RecordingPanel() {
         <div className="flex flex-wrap gap-3">
           {state === "idle" && (
             <Button type="button" className="flex-1" size="lg" onClick={handleStart}>
-              Start recording
+              {t("start")}
             </Button>
           )}
 
@@ -242,12 +248,12 @@ export function RecordingPanel() {
                 {state === "recording" ? (
                   <>
                     <Pause className="size-4" aria-hidden />
-                    Pause
+                    {t("pause")}
                   </>
                 ) : (
                   <>
                     <Play className="size-4" aria-hidden />
-                    Resume
+                    {t("resume")}
                   </>
                 )}
               </Button>
@@ -258,7 +264,7 @@ export function RecordingPanel() {
                 onClick={stopRecording}
               >
                 <Square className="size-4" aria-hidden />
-                Stop
+                {t("stop")}
               </Button>
             </>
           )}
@@ -271,7 +277,7 @@ export function RecordingPanel() {
               disabled={uploadMutation.isPending}
               onClick={handleSave}
             >
-              Save recording
+              {t("save")}
             </Button>
           )}
         </div>

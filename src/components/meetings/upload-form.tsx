@@ -3,6 +3,7 @@
 import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useMutation } from "@tanstack/react-query";
+import { useTranslations } from "next-intl";
 import { FileAudio, FileText, Mic, Upload } from "lucide-react";
 import { meetingsApi } from "@/lib/api/meetings";
 import type { SourceType } from "@/lib/schemas";
@@ -22,78 +23,31 @@ import { cn } from "@/lib/utils";
 
 type FormType = "record" | "upload" | "notes";
 
-const formTypes: {
-  id: FormType;
-  label: string;
-  description: string;
-  icon: typeof Mic;
-  color: {
-    active: string;
-    icon: string;
-    ring: string;
-  };
-}[] = [
-  {
-    id: "record",
-    label: "Record meeting",
-    description: "Capture audio in your browser",
-    icon: Mic,
-    color: {
-      active: "border-primary bg-primary/20 shadow-md shadow-primary/15",
-      icon: "bg-primary/30 text-primary",
-      ring: "ring-primary/40",
-    },
-  },
-  {
-    id: "upload",
-    label: "Upload meeting",
-    description: "MP3 or MP4 file",
-    icon: FileAudio,
-    color: {
-      active: "border-brand-peach bg-brand-peach/25 shadow-md shadow-brand-peach/20",
-      icon: "bg-brand-peach/40 text-foreground",
-      ring: "ring-brand-peach/50",
-    },
-  },
-  {
-    id: "notes",
-    label: "Upload notes",
-    description: "PDF document",
-    icon: FileText,
-    color: {
-      active: "border-brand-lilac bg-brand-lilac/30 shadow-md shadow-brand-lilac/20",
-      icon: "bg-brand-lilac/50 text-foreground",
-      ring: "ring-brand-lilac/50",
-    },
-  },
-];
+const formTypeIds: FormType[] = ["record", "upload", "notes"];
 
-const formCopy: Record<
-  FormType,
-  { title: string; description: string; submit: string; submitting: string }
-> = {
+const formTypeIcons = {
+  record: Mic,
+  upload: FileAudio,
+  notes: FileText,
+} as const;
+
+const formTypeColors = {
   record: {
-    title: "Record board meeting",
-    description:
-      "Use your microphone to record the meeting directly in the browser. We'll turn it into color-coded minutes.",
-    submit: "Start recording",
-    submitting: "Starting…",
+    active: "border-primary bg-primary/20 shadow-md shadow-primary/15",
+    icon: "bg-primary/30 text-primary",
+    ring: "ring-primary/40",
   },
   upload: {
-    title: "Upload board meeting recording",
-    description:
-      "Add an MP3 or MP4 of your HOA board meeting. We'll produce color-coded minutes with motions, votes, and action items.",
-    submit: "Upload recording",
-    submitting: "Uploading…",
+    active: "border-brand-peach bg-brand-peach/25 shadow-md shadow-brand-peach/20",
+    icon: "bg-brand-peach/40 text-foreground",
+    ring: "ring-brand-peach/50",
   },
   notes: {
-    title: "Upload meeting notes",
-    description:
-      "Add a PDF of existing board meeting notes. We'll extract and color-code motions, votes, and action items.",
-    submit: "Upload notes",
-    submitting: "Uploading…",
+    active: "border-brand-lilac bg-brand-lilac/30 shadow-md shadow-brand-lilac/20",
+    icon: "bg-brand-lilac/50 text-foreground",
+    ring: "ring-brand-lilac/50",
   },
-};
+} as const;
 
 const sourceTypeMap: Record<Exclude<FormType, "record">, SourceType> = {
   upload: "upload",
@@ -101,6 +55,8 @@ const sourceTypeMap: Record<Exclude<FormType, "record">, SourceType> = {
 };
 
 export function UploadMeetingForm() {
+  const t = useTranslations("upload");
+  const tc = useTranslations("common");
   const router = useRouter();
   const abortRef = useRef<AbortController | null>(null);
   const [formType, setFormType] = useState<FormType>("upload");
@@ -112,8 +68,6 @@ export function UploadMeetingForm() {
     percent: null as number | null,
   });
   const [uploadingFileName, setUploadingFileName] = useState<string | null>(null);
-
-  const copy = formCopy[formType];
 
   const uploadMutation = useMutation({
     mutationFn: async ({
@@ -138,7 +92,11 @@ export function UploadMeetingForm() {
     },
     onError: (err: Error) => {
       setUploadingFileName(null);
-      setMessage(err.message);
+      setMessage(
+        err.message === "Upload cancelled."
+          ? tc("uploadCancelled")
+          : err.message
+      );
     },
   });
 
@@ -172,8 +130,8 @@ export function UploadMeetingForm() {
     if (!file || file.size === 0) {
       setMessage(
         formType === "notes"
-          ? "Please choose a PDF file to upload."
-          : "Please choose an MP3 or MP4 file to upload."
+          ? t("errors.choosePdf")
+          : t("errors.chooseAudio")
       );
       return;
     }
@@ -182,11 +140,11 @@ export function UploadMeetingForm() {
 
     if (formType === "upload") {
       if (!extension || !["mp3", "mp4"].includes(extension)) {
-        setMessage("Only MP3 and MP4 files are supported.");
+        setMessage(t("errors.audioOnly"));
         return;
       }
     } else if (extension !== "pdf") {
-      setMessage("Only PDF files are supported.");
+      setMessage(t("errors.pdfOnly"));
       return;
     }
 
@@ -212,9 +170,11 @@ export function UploadMeetingForm() {
         <div
           className="grid grid-cols-1 gap-3 sm:grid-cols-3"
           role="tablist"
-          aria-label="Meeting input type"
+          aria-label={t("inputTypeAria")}
         >
-          {formTypes.map(({ id, label, description, icon: Icon, color }) => {
+          {formTypeIds.map((id) => {
+            const Icon = formTypeIcons[id];
+            const color = formTypeColors[id];
             const isActive = formType === id;
             return (
               <button
@@ -239,8 +199,12 @@ export function UploadMeetingForm() {
                 >
                   <Icon className="size-5" aria-hidden />
                 </span>
-                <span className="text-sm font-semibold text-foreground">{label}</span>
-                <span className="text-xs text-muted-foreground">{description}</span>
+                <span className="text-sm font-semibold text-foreground">
+                  {t(`formTypes.${id}.label`)}
+                </span>
+                <span className="text-xs text-muted-foreground">
+                  {t(`formTypes.${id}.description`)}
+                </span>
               </button>
             );
           })}
@@ -248,8 +212,8 @@ export function UploadMeetingForm() {
 
         <Card className="border-border/80 shadow-sm">
           <CardHeader>
-            <CardTitle className="text-xl">{copy.title}</CardTitle>
-            <CardDescription>{copy.description}</CardDescription>
+            <CardTitle className="text-xl">{t(`copy.${formType}.title`)}</CardTitle>
+            <CardDescription>{t(`copy.${formType}.description`)}</CardDescription>
           </CardHeader>
           <CardContent>
             {formType === "record" ? (
@@ -258,7 +222,7 @@ export function UploadMeetingForm() {
               <form onSubmit={handleSubmit} className="space-y-5">
                 {formType === "upload" && (
                   <div className="space-y-2">
-                    <Label htmlFor="file">Audio or video file</Label>
+                    <Label htmlFor="file">{t("audioFile")}</Label>
                     <label
                       htmlFor="file"
                       className="flex cursor-pointer flex-col items-center justify-center gap-3 rounded-xl border-2 border-dashed border-brand-peach/50 bg-brand-peach/15 px-6 py-10 transition-colors hover:border-brand-peach/70 hover:bg-brand-peach/25"
@@ -272,9 +236,9 @@ export function UploadMeetingForm() {
                         ) : (
                           <>
                             <span className="font-medium text-foreground">
-                              Click to browse
+                              {t("clickToBrowse")}
                             </span>{" "}
-                            or drag and drop MP3 or MP4
+                            {t("dropAudio")}
                           </>
                         )}
                       </span>
@@ -295,7 +259,7 @@ export function UploadMeetingForm() {
 
                 {formType === "notes" && (
                   <div className="space-y-2">
-                    <Label htmlFor="file">PDF file</Label>
+                    <Label htmlFor="file">{t("pdfFile")}</Label>
                     <label
                       htmlFor="file"
                       className="flex cursor-pointer flex-col items-center justify-center gap-3 rounded-xl border-2 border-dashed border-brand-lilac/50 bg-brand-lilac/20 px-6 py-10 transition-colors hover:border-brand-lilac/70 hover:bg-brand-lilac/30"
@@ -309,9 +273,9 @@ export function UploadMeetingForm() {
                         ) : (
                           <>
                             <span className="font-medium text-foreground">
-                              Click to browse
+                              {t("clickToBrowse")}
                             </span>{" "}
-                            or drag and drop your PDF
+                            {t("dropPdf")}
                           </>
                         )}
                       </span>
@@ -343,7 +307,7 @@ export function UploadMeetingForm() {
                     disabled={uploadMutation.isPending}
                     onClick={() => router.push("/meetings")}
                   >
-                    Cancel
+                    {tc("cancel")}
                   </Button>
                   <Button
                     type="submit"
@@ -351,7 +315,9 @@ export function UploadMeetingForm() {
                     size="lg"
                     disabled={uploadMutation.isPending}
                   >
-                    {uploadMutation.isPending ? copy.submitting : copy.submit}
+                    {uploadMutation.isPending
+                      ? t(`copy.${formType}.submitting`)
+                      : t(`copy.${formType}.submit`)}
                   </Button>
                 </div>
               </form>

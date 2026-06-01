@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useMutation } from "@tanstack/react-query";
+import { useTranslations } from "next-intl";
 import { authApi } from "@/lib/api/auth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -16,6 +17,8 @@ import {
 } from "@/components/ui/card";
 
 export function ForgotPasswordForm() {
+  const t = useTranslations("auth.forgotPassword");
+  const tc = useTranslations("common");
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -42,21 +45,18 @@ export function ForgotPasswordForm() {
   return (
     <Card className="w-full max-w-md border-border/80 shadow-sm">
       <CardHeader>
-        <CardTitle className="text-xl">Reset your password</CardTitle>
-        <CardDescription>
-          Enter your email and we&apos;ll send you a reset link. In development,
-          check the API console for the link.
-        </CardDescription>
+        <CardTitle className="text-xl">{t("title")}</CardTitle>
+        <CardDescription>{t("description")}</CardDescription>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
+            <Label htmlFor="email">{tc("email")}</Label>
             <Input
               id="email"
               name="email"
               type="email"
-              placeholder="secretary@youroakwoodhoa.org"
+              placeholder={tc("emailPlaceholder")}
               autoComplete="email"
               required
             />
@@ -77,11 +77,11 @@ export function ForgotPasswordForm() {
             size="lg"
             disabled={mutation.isPending}
           >
-            {mutation.isPending ? "Sending…" : "Send reset link"}
+            {mutation.isPending ? t("sending") : t("sendLink")}
           </Button>
           <p className="text-center text-sm text-muted-foreground">
             <Link href="/login" className="font-medium text-foreground underline-offset-4 hover:underline">
-              Back to sign in
+              {t("backToSignIn")}
             </Link>
           </p>
         </form>
