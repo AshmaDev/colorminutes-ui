@@ -4,6 +4,7 @@ import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
+import { landingButtonSecondaryClassName } from "@/lib/landing-styles";
 import { useAuth } from "@/providers/auth-provider";
 
 export function HomeHeroActions() {
@@ -12,8 +13,8 @@ export function HomeHeroActions() {
 
   if (isLoading) {
     return (
-      <div className="flex flex-wrap gap-3 pt-2">
-        <Button variant="landing" size="lg" disabled>
+      <div className="flex flex-wrap gap-4 pt-2">
+        <Button variant="landing" size="xl" disabled>
           {t("getStarted")}
         </Button>
       </div>
@@ -22,12 +23,17 @@ export function HomeHeroActions() {
 
   if (isAuthenticated) {
     return (
-      <div className="flex flex-wrap gap-3 pt-2">
-        <Button render={<Link href="/meetings" />} variant="landing" size="lg">
+      <div className="flex flex-wrap gap-4 pt-2">
+        <Button render={<Link href="/meetings" />} variant="landing" size="xl">
           {t("goToMeetings")}
-          <ArrowRight className="size-4" aria-hidden />
+          <ArrowRight className="size-5" aria-hidden />
         </Button>
-        <Button render={<Link href="/meetings/new" />} variant="landingOutline" size="lg">
+        <Button
+          render={<Link href="/meetings/new" />}
+          variant="landing"
+          size="xl"
+          className={landingButtonSecondaryClassName}
+        >
           {t("addMeeting")}
         </Button>
       </div>
@@ -35,12 +41,17 @@ export function HomeHeroActions() {
   }
 
   return (
-    <div className="flex flex-wrap gap-3 pt-2">
-      <Button render={<Link href="/register" />} variant="landing" size="lg">
+    <div className="flex flex-wrap gap-4 pt-2">
+      <Button render={<Link href="/register" />} variant="landing" size="xl">
         {t("getStarted")}
-        <ArrowRight className="size-4" aria-hidden />
+        <ArrowRight className="size-5" aria-hidden />
       </Button>
-      <Button render={<Link href="/login" />} variant="landingOutline" size="lg">
+      <Button
+        render={<Link href="/login" />}
+        variant="landing"
+        size="xl"
+        className={landingButtonSecondaryClassName}
+      >
         {t("logIn")}
       </Button>
     </div>

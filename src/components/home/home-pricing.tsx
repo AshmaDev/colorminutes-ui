@@ -4,7 +4,7 @@ import { getTranslations } from "next-intl/server";
 import { HomeSectionLabel } from "@/components/home/home-section-label";
 import { HomeSectionTitle } from "@/components/home/home-section-title";
 import { Button } from "@/components/ui/button";
-import { landingSurfaceClassName } from "@/lib/landing-styles";
+import { landingButtonSecondaryClassName, landingCardClassName, landingSectionClassName } from "@/lib/landing-styles";
 import { cn } from "@/lib/utils";
 
 const tiers = ["free", "pro", "team"] as const;
@@ -13,7 +13,7 @@ export async function HomePricing() {
   const t = await getTranslations("home.pricing");
 
   return (
-    <section id="pricing" className="flex min-h-screen flex-col justify-center border-b border-black bg-brand-pink">
+    <section id="pricing" className={cn(landingSectionClassName, "bg-brand-pink")}>
       <div className="mx-auto max-w-7xl px-6 py-20 lg:py-28">
         <div className="mb-16 max-w-2xl space-y-4">
           <HomeSectionLabel>{t("label")}</HomeSectionLabel>
@@ -21,8 +21,8 @@ export async function HomePricing() {
           <p className="text-base leading-relaxed text-foreground/80">{t("subtitle")}</p>
         </div>
 
-        <div className={cn("grid lg:grid-cols-3", landingSurfaceClassName)}>
-          {tiers.map((tier, index) => {
+        <div className="grid gap-4 lg:grid-cols-3 lg:gap-6">
+          {tiers.map((tier) => {
             const isHighlighted = tier === "pro";
             const features = t.raw(`${tier}.features`) as string[];
 
@@ -30,9 +30,9 @@ export async function HomePricing() {
               <article
                 key={tier}
                 className={cn(
-                  "flex flex-col p-8 sm:p-10",
-                  index < tiers.length - 1 && "border-b border-black lg:border-b-0 lg:border-r",
-                  isHighlighted && "bg-white",
+                  landingCardClassName,
+                  "flex flex-col",
+                  isHighlighted && "bg-white/90 shadow-xl shadow-black/[0.08]",
                 )}
               >
                 {isHighlighted && (
@@ -53,7 +53,7 @@ export async function HomePricing() {
                   {t(`${tier}.description`)}
                 </p>
 
-                <ul className="my-8 flex-1 space-y-3 border-t border-black pt-8">
+                <ul className="my-8 flex-1 space-y-3 pt-2">
                   {features.map((feature) => (
                     <li
                       key={feature}
@@ -66,9 +66,12 @@ export async function HomePricing() {
 
                 <Button
                   render={<Link href="/register" />}
-                  variant={isHighlighted ? "landing" : "landingOutline"}
+                  variant="landing"
                   size="lg"
-                  className="w-full sm:w-auto"
+                  className={cn(
+                    "w-full sm:w-auto",
+                    !isHighlighted && landingButtonSecondaryClassName,
+                  )}
                 >
                   {t(`${tier}.cta`)}
                   <ArrowRight className="size-4" aria-hidden />

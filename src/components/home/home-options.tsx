@@ -1,7 +1,8 @@
 import { getTranslations } from "next-intl/server";
 import { HomeSectionLabel } from "@/components/home/home-section-label";
 import { HomeSectionTitle } from "@/components/home/home-section-title";
-import { landingSurfaceClassName } from "@/lib/landing-styles";
+import { landingCardClassName, landingSectionClassName } from "@/lib/landing-styles";
+import { cn } from "@/lib/utils";
 import { ClickIcon, PdfIcon, RecordIcon, UploadIcon } from "../icons";
 
 const options = [
@@ -14,19 +15,18 @@ export async function HomeOptions() {
   const t = await getTranslations("home.options");
 
   return (
-    <section className="flex min-h-screen flex-col justify-center border-b border-black bg-brand-yellow">
+    <section className={cn(landingSectionClassName, "bg-brand-yellow")}>
       <div className="mx-auto max-w-7xl px-6 py-20 lg:py-28">
         <div className="mb-16 max-w-2xl space-y-4">
           <HomeSectionLabel>{t("label")}</HomeSectionLabel>
           <HomeSectionTitle>{t("title")}</HomeSectionTitle>
         </div>
 
-        <div className={`grid lg:grid-cols-3 ${landingSurfaceClassName}`}>
-          {options.map(({ key, icon: Icon }, index) => (
+        <div className="grid gap-4 lg:grid-cols-3 lg:gap-6">
+          {options.map(({ key, icon: Icon }) => (
             <article
               key={key}
-              className={`group flex flex-col justify-between p-8 sm:p-10 ${index < options.length - 1 ? "border-b border-black lg:border-b-0 lg:border-r" : ""
-                }`}
+              className={cn(landingCardClassName, "group flex flex-col justify-between")}
             >
               <div className="space-y-8">
                 <div className="flex items-start justify-between">

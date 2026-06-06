@@ -1,7 +1,8 @@
 import { getTranslations } from "next-intl/server";
 import { HomeSectionLabel } from "@/components/home/home-section-label";
 import { HomeSectionTitle } from "@/components/home/home-section-title";
-import { landingSurfaceClassName } from "@/lib/landing-styles";
+import { landingCardClassName, landingSectionClassName } from "@/lib/landing-styles";
+import { cn } from "@/lib/utils";
 import { ClickIcon, DownloadIcon, GlobeIcon, LockIcon } from "../icons";
 
 const items = [
@@ -13,7 +14,7 @@ export async function HomePublish() {
   const t = await getTranslations("home.publish");
 
   return (
-    <section className="flex min-h-screen flex-col justify-center border-b border-black bg-brand-peach">
+    <section className={cn(landingSectionClassName, "bg-brand-peach")}>
       <div className="mx-auto max-w-7xl px-6 py-20 lg:py-28">
         <div className="mb-16 grid gap-8 lg:grid-cols-2 lg:items-end">
           <div className="space-y-4">
@@ -25,17 +26,13 @@ export async function HomePublish() {
           </p>
         </div>
 
-        <div className={`grid lg:grid-cols-2 ${landingSurfaceClassName}`}>
-          {items.map(({ key, icon: Icon }, index) => (
-            <article
-              key={key}
-              className={`group p-8 sm:p-12 ${index === 0 ? "border-b border-black lg:border-b-0 lg:border-r" : ""
-                }`}
-            >
+        <div className="grid gap-4 lg:grid-cols-2 lg:gap-6">
+          {items.map(({ key, icon: Icon }) => (
+            <article key={key} className={cn(landingCardClassName, "group sm:p-12")}>
               <div className="mb-8 flex items-start justify-between">
                 <Icon className="size-12 text-foreground" aria-hidden />
-                <span className="inline-flex items-center gap-1.5 rounded-full border border-black bg-black px-3 py-1 text-xs font-medium uppercase tracking-wider text-white">
-                  <LockIcon className="size-6 text-white" aria-hidden />
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-white/70 px-3 py-1.5 text-xs font-medium uppercase tracking-wider text-foreground shadow-sm">
+                  <LockIcon className="size-5 text-foreground/70" aria-hidden />
                   {t(`${key}.secure`)}
                 </span>
               </div>

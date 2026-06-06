@@ -19,9 +19,7 @@ const buttonVariants = cva(
           "bg-destructive/10 text-destructive hover:bg-destructive/20 focus-visible:border-destructive/40 focus-visible:ring-destructive/20 dark:bg-destructive/20 dark:hover:bg-destructive/30 dark:focus-visible:ring-destructive/40",
         link: "text-primary underline-offset-4 hover:underline",
         landing:
-          "border-black bg-black text-white hover:bg-black/90 focus-visible:border-black focus-visible:ring-black/20 active:translate-y-0",
-        landingOutline:
-          "border-black bg-transparent text-foreground hover:bg-black hover:text-white focus-visible:border-black focus-visible:ring-black/20 active:translate-y-0",
+          "rounded-2xl border-0 bg-brand-lilac text-foreground shadow-md shadow-brand-lilac/40 hover:bg-brand-lilac/85 hover:shadow-lg hover:shadow-brand-lilac/45 focus-visible:ring-brand-lilac/60 active:translate-y-0",
       },
       size: {
         default:
@@ -29,6 +27,7 @@ const buttonVariants = cva(
         xs: "h-8 gap-1.5 rounded-[min(var(--radius-md),10px)] px-3 text-sm has-data-[icon=inline-end]:pr-2 has-data-[icon=inline-start]:pl-2 [&_svg:not([class*='size-'])]:size-4",
         sm: "h-9 gap-1.5 rounded-[min(var(--radius-md),12px)] px-3.5 text-sm has-data-[icon=inline-end]:pr-2.5 has-data-[icon=inline-start]:pl-2.5 [&_svg:not([class*='size-'])]:size-4",
         lg: "h-12 gap-2 px-5 text-base has-data-[icon=inline-end]:pr-4 has-data-[icon=inline-start]:pl-4",
+        xl: "h-14 gap-2.5 px-8 text-lg has-data-[icon=inline-end]:pr-6 has-data-[icon=inline-start]:pl-6",
         icon: "size-11",
         "icon-xs":
           "size-8 rounded-[min(var(--radius-md),10px)] [&_svg:not([class*='size-'])]:size-4",
@@ -43,8 +42,9 @@ const buttonVariants = cva(
     },
     compoundVariants: [
       {
-        variant: ["landing", "landingOutline"],
-        class: "rounded-xl text-sm",
+        variant: "landing",
+        size: "lg",
+        class: "text-sm",
       },
     ],
   }

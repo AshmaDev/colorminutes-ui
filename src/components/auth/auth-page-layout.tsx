@@ -1,7 +1,7 @@
 import { AuthPageAside } from "@/components/auth/auth-page-aside";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
-import { landingSurfaceClassName } from "@/lib/landing-styles";
+import { landingSectionClassName, landingSurfaceClassName } from "@/lib/landing-styles";
 import { cn } from "@/lib/utils";
 
 type AuthPageLayoutProps = {
@@ -21,7 +21,8 @@ export function AuthPageLayout({ variant, children }: AuthPageLayoutProps) {
       <main className="flex flex-1 flex-col">
         <section
           className={cn(
-            "flex min-h-[calc(100vh-7.5rem)] flex-col justify-center border-b border-black",
+            landingSectionClassName,
+            "min-h-[calc(100vh-7.5rem)]",
             backgroundByVariant[variant],
           )}
         >

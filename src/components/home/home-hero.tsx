@@ -2,14 +2,14 @@ import { getTranslations } from "next-intl/server";
 import { HomeHeroActions } from "@/components/home/home-hero-actions";
 import { HomeSectionLabel } from "@/components/home/home-section-label";
 import { HomeSectionTitle } from "@/components/home/home-section-title";
-import { landingSurfaceClassName } from "@/lib/landing-styles";
+import { landingSectionClassName, landingSurfaceClassName } from "@/lib/landing-styles";
 import { cn } from "@/lib/utils";
 
 export async function HomeHero() {
   const t = await getTranslations("home");
 
   return (
-    <section className="flex min-h-screen flex-col justify-center border-b border-black bg-brand-sky">
+    <section className={cn(landingSectionClassName, "bg-brand-sky")}>
       <div className="mx-auto grid w-full max-w-7xl gap-12 px-6 py-20 lg:grid-cols-2 lg:items-center lg:gap-16 lg:py-28">
         <div className="space-y-8">
           <HomeSectionLabel>{t("badge")}</HomeSectionLabel>

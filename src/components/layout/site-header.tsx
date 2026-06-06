@@ -29,7 +29,7 @@ export function SiteHeader({
     <header
       className={
         isLanding
-          ? "border-b border-black bg-muted"
+          ? "bg-white/40 backdrop-blur-sm"
           : "border-b border-border/60 bg-muted"
       }
     >

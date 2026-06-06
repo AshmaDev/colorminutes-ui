@@ -11,7 +11,7 @@ export function SiteFooter({ variant = "default" }: { variant?: "default" | "lan
     <footer
       className={
         isLanding
-          ? "mt-auto border-t border-black bg-muted"
+          ? "mt-auto bg-white/40 backdrop-blur-sm"
           : "mt-auto border-t border-border/60 bg-muted"
       }
     >
