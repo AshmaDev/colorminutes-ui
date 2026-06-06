@@ -8,6 +8,7 @@ import { meetingsApi } from "@/lib/api/meetings";
 import { SiteHeader } from "@/components/layout/site-header";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { Button } from "@/components/ui/button";
+import { PublishStatus } from "@/components/meetings/publish-status";
 import type { Meeting } from "@/lib/schemas";
 
 type MeetingsTranslator = (key: string) => string;
@@ -23,8 +24,17 @@ const statusStyles = {
   uploaded: "text-muted-foreground",
   processing: "text-amber-700",
   ready: "text-emerald-700",
+  generating: "text-amber-700",
+  generated: "text-emerald-700",
   failed: "text-destructive",
 } as const;
+
+function meetingHref(meeting: Meeting): string {
+  if (meeting.status === "generated" || meeting.sections.length > 0) {
+    return `/meetings/${meeting.id}`;
+  }
+  return `/meetings/${meeting.id}/edit`;
+}
 
 function formatDate(iso: string): string {
   return new Date(iso).toLocaleDateString(undefined, {
@@ -105,7 +115,7 @@ function MeetingRow({
   return (
     <li>
       <Link
-        href={`/meetings/${meeting.id}/edit`}
+        href={meetingHref(meeting)}
         className="flex items-center gap-4 px-6 py-4 transition-colors hover:bg-muted/30"
       >
         <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-muted">
@@ -122,11 +132,17 @@ function MeetingRow({
               : ""}
           </p>
         </div>
-        <span
-          className={`shrink-0 text-xs font-medium ${statusStyles[meeting.status]}`}
-        >
-          {t(`statusLabels.${meeting.status}`)}
-        </span>
+        <div className="flex shrink-0 flex-col items-end gap-1">
+          <span
+            className={`text-xs font-medium ${statusStyles[meeting.status]}`}
+          >
+            {t(`statusLabels.${meeting.status}`)}
+          </span>
+          <PublishStatus
+            visibility={meeting.visibility}
+            publishedAt={meeting.publishedAt}
+          />
+        </div>
       </Link>
     </li>
   );

@@ -1,7 +1,11 @@
 import axios from "axios";
 import {
   meetingSchema,
+  publicMeetingSchema,
+  publishMeetingResponseSchema,
   type Meeting,
+  type MeetingVisibility,
+  type PublicMeeting,
   type SourceType,
 } from "@/lib/schemas";
 import { z } from "zod";
@@ -13,6 +17,14 @@ export type UploadProgressHandler = (progress: {
   total: number | null;
   percent: number | null;
 }) => void;
+
+export type SectionInput = {
+  id?: string;
+  header: string;
+  content: string;
+  sortOrder: number;
+  color?: "peach" | "pink" | "lilac" | "sage";
+};
 
 export const meetingsApi = {
   async list(): Promise<Meeting[]> {
@@ -26,6 +38,26 @@ export const meetingsApi = {
   async get(id: string): Promise<Meeting> {
     try {
       return meetingSchema.parse(await api.get(`meetings/${id}`).json());
+    } catch (error) {
+      throw new Error(await parseApiError(error));
+    }
+  },
+
+  async getPreview(id: string): Promise<PublicMeeting> {
+    try {
+      return publicMeetingSchema.parse(
+        await api.get(`meetings/${id}/preview`).json()
+      );
+    } catch (error) {
+      throw new Error(await parseApiError(error));
+    }
+  },
+
+  async getPublic(identifier: string): Promise<PublicMeeting> {
+    try {
+      return publicMeetingSchema.parse(
+        await api.get(`public/meetings/${identifier}`).json()
+      );
     } catch (error) {
       throw new Error(await parseApiError(error));
     }
@@ -91,6 +123,42 @@ export const meetingsApi = {
     try {
       return meetingSchema.parse(
         await api.patch(`meetings/${id}`, { json: data }).json()
+      );
+    } catch (error) {
+      throw new Error(await parseApiError(error));
+    }
+  },
+
+  async generate(id: string): Promise<Meeting> {
+    try {
+      return meetingSchema.parse(
+        await api.post(`meetings/${id}/generate`).json()
+      );
+    } catch (error) {
+      throw new Error(await parseApiError(error));
+    }
+  },
+
+  async saveSections(
+    id: string,
+    data: { title?: string; sections: SectionInput[] }
+  ): Promise<Meeting> {
+    try {
+      return meetingSchema.parse(
+        await api.put(`meetings/${id}/sections`, { json: data }).json()
+      );
+    } catch (error) {
+      throw new Error(await parseApiError(error));
+    }
+  },
+
+  async publish(
+    id: string,
+    visibility: Extract<MeetingVisibility, "public" | "link">
+  ): Promise<{ url: string; visibility: MeetingVisibility; slug: string | null }> {
+    try {
+      return publishMeetingResponseSchema.parse(
+        await api.post(`meetings/${id}/publish`, { json: { visibility } }).json()
       );
     } catch (error) {
       throw new Error(await parseApiError(error));

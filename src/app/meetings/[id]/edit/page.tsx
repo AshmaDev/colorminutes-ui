@@ -20,6 +20,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { PublishStatus } from "@/components/meetings/publish-status";
 import type { Meeting } from "@/lib/schemas";
 
 function formatBytes(bytes: number): string {
@@ -51,26 +52,39 @@ export default function EditMeetingPage() {
   const { data: meeting, isLoading, error } = useQuery({
     queryKey: ["meetings", meetingId],
     queryFn: () => meetingsApi.get(meetingId),
-    refetchInterval: (query) =>
-      query.state.data?.status === "processing" ? 3000 : false,
+    refetchInterval: (query) => {
+      const status = query.state.data?.status;
+      return status === "processing" || status === "generating" ? 3000 : false;
+    },
   });
 
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [savedMessage, setSavedMessage] = useState<string | null>(null);
+  const [syncedTitle, setSyncedTitle] = useState<string | undefined>(undefined);
+  const [syncedContent, setSyncedContent] = useState<string | undefined>(
+    undefined
+  );
+
+  if (meeting) {
+    const meetingTitle = meeting.title ?? "";
+    if (syncedTitle !== meetingTitle) {
+      setSyncedTitle(meetingTitle);
+      setTitle(meetingTitle);
+    }
+
+    const meetingContent = meeting.file?.content;
+    if (meetingContent != null && syncedContent !== meetingContent) {
+      setSyncedContent(meetingContent);
+      setContent(meetingContent);
+    }
+  }
 
   useEffect(() => {
-    if (meeting?.title) {
-      setTitle(meeting.title);
+    if (meeting?.status === "generated" || meeting?.sections.length) {
+      router.replace(`/meetings/${meetingId}`);
     }
-  }, [meeting?.title]);
-
-  useEffect(() => {
-    const fileContent = meeting?.file?.content;
-    if (fileContent !== undefined && fileContent !== null) {
-      setContent(fileContent);
-    }
-  }, [meeting?.file?.content]);
+  }, [meeting?.status, meeting?.sections.length, meetingId, router]);
 
   const updateMutation = useMutation({
     mutationFn: (data: { title?: string; content?: string }) =>
@@ -80,6 +94,14 @@ export default function EditMeetingPage() {
       queryClient.invalidateQueries({ queryKey: ["meetings"] });
       setSavedMessage(tc("saved"));
       setTimeout(() => setSavedMessage(null), 2000);
+    },
+  });
+
+  const generateMutation = useMutation({
+    mutationFn: () => meetingsApi.generate(meetingId),
+    onSuccess: (updated) => {
+      queryClient.setQueryData(["meetings", meetingId], updated);
+      queryClient.invalidateQueries({ queryKey: ["meetings"] });
     },
   });
 
@@ -123,7 +145,9 @@ export default function EditMeetingPage() {
         }
       }}
       onSaveContent={() => updateMutation.mutate({ content })}
+      onGenerate={() => generateMutation.mutate()}
       isSaving={updateMutation.isPending}
+      isGenerating={generateMutation.isPending || meeting.status === "generating"}
     />
   );
 }
@@ -138,7 +162,9 @@ function EditMeetingContent({
   onBack,
   onSaveTitle,
   onSaveContent,
+  onGenerate,
   isSaving,
+  isGenerating,
 }: {
   meeting: Meeting;
   title: string;
@@ -149,7 +175,9 @@ function EditMeetingContent({
   onBack: () => void;
   onSaveTitle: () => void;
   onSaveContent: () => void;
+  onGenerate: () => void;
   isSaving: boolean;
+  isGenerating: boolean;
 }) {
   const t = useTranslations("meetings");
   const tc = useTranslations("common");
@@ -160,11 +188,18 @@ function EditMeetingContent({
   const editDescription =
     meeting.status === "processing"
       ? t("editDescription.processing")
-      : meeting.status === "ready"
-        ? t("editDescription.ready")
-        : meeting.status === "failed"
-          ? t("editDescription.failed")
-          : t("editDescription.default");
+      : meeting.status === "generating"
+        ? t("editDescription.generating")
+        : meeting.status === "ready"
+          ? t("editDescription.ready")
+          : meeting.status === "failed"
+            ? t("editDescription.failed")
+            : t("editDescription.default");
+
+  const canGenerate =
+    (meeting.status === "ready" || meeting.status === "failed") &&
+    content.trim().length > 0 &&
+    meeting.sections.length === 0;
 
   return (
     <div className="flex min-h-screen flex-col bg-background">
@@ -241,6 +276,16 @@ function EditMeetingContent({
                   <dt className="text-muted-foreground">{t("status")}</dt>
                   <dd>{t(`statusLabels.${meeting.status}`)}</dd>
                 </div>
+                <div className="flex justify-between gap-4">
+                  <dt className="text-muted-foreground">{t("publishStatus")}</dt>
+                  <dd>
+                    <PublishStatus
+                      visibility={meeting.visibility}
+                      publishedAt={meeting.publishedAt}
+                      className="text-sm"
+                    />
+                  </dd>
+                </div>
               </dl>
             </div>
 
@@ -254,13 +299,23 @@ function EditMeetingContent({
               </div>
             )}
 
+            {meeting.status === "generating" && (
+              <div
+                className="flex items-center gap-3 rounded-lg bg-brand-lilac/20 px-4 py-3 text-sm text-muted-foreground"
+                role="status"
+              >
+                <Loader2 className="size-4 animate-spin" aria-hidden />
+                {t("generatingBanner")}
+              </div>
+            )}
+
             {meeting.status === "failed" && meeting.processingError && (
               <p className="rounded-lg border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive">
                 {meeting.processingError}
               </p>
             )}
 
-            {meeting.status === "ready" && (
+            {(meeting.status === "ready" || meeting.status === "failed") && (
               <form
                 onSubmit={(event) => {
                   event.preventDefault();
@@ -278,9 +333,28 @@ function EditMeetingContent({
                     rows={16}
                   />
                 </div>
-                <Button type="submit" disabled={isSaving}>
-                  {isSaving ? tc("saving") : t("saveContent")}
-                </Button>
+                <div className="flex flex-wrap items-center gap-3">
+                  <Button type="submit" variant="outline" disabled={isSaving}>
+                    {isSaving ? tc("saving") : t("saveContent")}
+                  </Button>
+                  {canGenerate && (
+                    <Button
+                      type="button"
+                      className="gap-2"
+                      disabled={isGenerating}
+                      onClick={onGenerate}
+                    >
+                      {isGenerating ? (
+                        <>
+                          <Loader2 className="size-4 animate-spin" aria-hidden />
+                          {t("generatingColorMinutes")}
+                        </>
+                      ) : (
+                        t("generateColorMinutes")
+                      )}
+                    </Button>
+                  )}
+                </div>
               </form>
             )}
           </CardContent>
