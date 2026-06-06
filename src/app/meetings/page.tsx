@@ -119,9 +119,7 @@ function MeetingRow({
             {formatDate(meeting.createdAt)}
             {meeting.file
               ? ` · ${meeting.file.originalFilename}`
-              : meeting.sourceFilename
-                ? ` · ${meeting.sourceFilename}`
-                : ""}
+              : ""}
           </p>
         </div>
         <span

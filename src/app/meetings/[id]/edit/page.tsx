@@ -66,10 +66,11 @@ export default function EditMeetingPage() {
   }, [meeting?.title]);
 
   useEffect(() => {
-    if (meeting?.content !== undefined && meeting.content !== null) {
-      setContent(meeting.content);
+    const fileContent = meeting?.file?.content;
+    if (fileContent !== undefined && fileContent !== null) {
+      setContent(fileContent);
     }
-  }, [meeting?.content]);
+  }, [meeting?.file?.content]);
 
   const updateMutation = useMutation({
     mutationFn: (data: { title?: string; content?: string }) =>
@@ -154,8 +155,7 @@ function EditMeetingContent({
   const tc = useTranslations("common");
 
   const SourceIcon = sourceIcons[meeting.sourceType];
-  const filename =
-    meeting.file?.originalFilename ?? meeting.sourceFilename ?? null;
+  const filename = meeting.file?.originalFilename ?? null;
 
   const editDescription =
     meeting.status === "processing"

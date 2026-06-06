@@ -20,6 +20,7 @@ export const meetingFileSchema = z.object({
   originalFilename: z.string(),
   mimeType: z.string(),
   sizeBytes: z.number(),
+  content: z.string().nullable(),
   createdAt: z.string(),
 });
 
@@ -28,9 +29,7 @@ export const meetingSchema = z.object({
   title: z.string().nullable(),
   sourceType: sourceTypeSchema,
   status: meetingStatusSchema,
-  content: z.string().nullable(),
   processingError: z.string().nullable(),
-  sourceFilename: z.string().nullable(),
   createdAt: z.string(),
   updatedAt: z.string(),
   file: meetingFileSchema.nullable(),
