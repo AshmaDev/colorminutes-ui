@@ -3,10 +3,10 @@ import Image from "next/image";
 
 export function Logo({ className }: { className?: string }) {
   return (
-    <div className={cn("flex items-center gap-2", className)}>
-        <Image src="/icon.svg" alt="ColorMinutes" width={40} height={40} />
+    <div className={cn("flex items-center gap-1", className)}>
+      <Image src="/icon.svg" alt="ColorMinutes" width={36} height={36} aria-hidden />
 
-      <span className="font-semibold tracking-tight text-foreground">
+      <span className="font-sans text-xl font-semibold tracking-tight text-foreground sm:text-2xl">
         ColorMinutes
       </span>
     </div>

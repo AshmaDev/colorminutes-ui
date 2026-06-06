@@ -3,9 +3,6 @@
 import DOMPurify from "dompurify";
 import { useTranslations } from "next-intl";
 import type { MeetingSection } from "@/lib/schemas";
-import { cn } from "@/lib/utils";
-import { sectionColorTextClass } from "@/lib/section-colors";
-
 type MeetingMinutesViewProps = {
   title: string | null;
   sections: MeetingSection[];
@@ -41,10 +38,7 @@ export function MeetingMinutesView({
               <li key={section.id}>
                 <a
                   href={`#${sectionAnchorId(section.id)}`}
-                  className={cn(
-                    "block py-1.5 text-sm leading-snug transition-colors hover:underline",
-                    sectionColorTextClass[section.color]
-                  )}
+                  className="block py-1.5 text-sm leading-snug text-foreground transition-colors hover:underline"
                 >
                   {section.header}
                 </a>
@@ -68,9 +62,7 @@ export function MeetingMinutesView({
               id={sectionAnchorId(section.id)}
               className="scroll-mt-8 border-t border-border/50 pt-12 first:border-t-0 first:pt-0"
             >
-              <h2
-                className={`mb-6 text-3xl font-bold leading-snug tracking-tight sm:text-4xl ${sectionColorTextClass[section.color]}`}
-              >
+              <h2 className="mb-6 text-3xl font-bold leading-snug tracking-tight text-foreground sm:text-4xl">
                 {section.header}
               </h2>
               <div

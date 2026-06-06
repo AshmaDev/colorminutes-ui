@@ -1,5 +1,11 @@
 import type { SectionColor } from "@/lib/schemas";
 
+export const SECTION_COLORS: SectionColor[] = ["peach", "pink", "lilac", "sage"];
+
+export function sectionColorAtIndex(index: number): SectionColor {
+  return SECTION_COLORS[index % SECTION_COLORS.length]!;
+}
+
 export const sectionColorTextClass: Record<SectionColor, string> = {
   peach: "text-brand-peach",
   pink: "text-brand-pink",

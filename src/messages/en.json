@@ -32,12 +32,123 @@
     "previewAction": "Action:",
     "previewActionText": "PM to circulate revised timeline by Friday.",
     "previewNote": "Note:",
-    "previewNoteText": "Budget discussion deferred to next week's finance review."
+    "previewNoteText": "Budget discussion deferred to next week's finance review.",
+    "options": {
+      "label": "How it works",
+      "title": "Three ways to capture your meetings",
+      "transcription": {
+        "number": "01",
+        "title": "Meeting transcription",
+        "description": "Upload an MP3 or MP4 recording. We transcribe the audio and extract motions, votes, and action items—automatically color-coded."
+      },
+      "recording": {
+        "number": "02",
+        "title": "Record meeting",
+        "description": "Capture audio directly in your browser. No extra software—just hit record and we'll handle the rest."
+      },
+      "ocr": {
+        "number": "03",
+        "title": "PDF OCR",
+        "description": "Already have meeting notes as a PDF? We extract the text—even from scanned pages—and turn them into structured, color-coded minutes."
+      }
+    },
+    "publish": {
+      "label": "Share & export",
+      "title": "Publish pages or download PDF",
+      "subtitle": "Share minutes your way. Every option is built with security in mind.",
+      "publish": {
+        "title": "Publish pages",
+        "description": "Share a beautiful, color-coded web page with your team. Choose public or link-only visibility.",
+        "secure": "Secure"
+      },
+      "download": {
+        "title": "Download PDF",
+        "description": "Export polished, print-ready minutes as a PDF. Perfect for archives, boards, and official records.",
+        "secure": "Secure"
+      }
+    },
+    "pricing": {
+      "label": "Pricing",
+      "title": "Simple plans for every team",
+      "subtitle": "Start free. Upgrade when your meeting volume grows.",
+      "free": {
+        "name": "Free",
+        "price": "$0",
+        "period": "forever",
+        "description": "For individuals trying ColorMinutes.",
+        "features": [
+          "3 meetings per month",
+          "All input methods",
+          "Color-coded minutes",
+          "PDF download"
+        ],
+        "cta": "Get started"
+      },
+      "pro": {
+        "name": "Pro",
+        "price": "$19",
+        "period": "per month",
+        "description": "For professionals who run meetings weekly.",
+        "features": [
+          "Unlimited meetings",
+          "Browser recording",
+          "Publish web pages",
+          "Priority processing"
+        ],
+        "cta": "Start free trial",
+        "highlight": "Most popular"
+      },
+      "team": {
+        "name": "Team",
+        "price": "$49",
+        "period": "per month",
+        "description": "For organizations with shared minute workflows.",
+        "features": [
+          "Everything in Pro",
+          "Team workspace",
+          "Admin controls",
+          "Dedicated support"
+        ],
+        "cta": "Contact us"
+      }
+    },
+    "faq": {
+      "label": "FAQ",
+      "title": "Questions & answers",
+      "items": {
+        "security": {
+          "question": "How secure are my meeting files?",
+          "answer": "All uploads are encrypted in transit and at rest. Published pages use secure URLs, and you control whether minutes are public or link-only."
+        },
+        "formats": {
+          "question": "What file formats do you support?",
+          "answer": "Upload MP3 or MP4 recordings for transcription, record directly in your browser, or upload PDF notes—including scanned documents via OCR."
+        },
+        "ocr": {
+          "question": "How does PDF OCR work?",
+          "answer": "We extract text from your PDF pages. If a page is scanned or image-based, our OCR engine reads the content so nothing gets left behind."
+        },
+        "publish": {
+          "question": "What's the difference between public and link-only publishing?",
+          "answer": "Public pages use a readable URL based on your meeting title and may be indexed by search engines. Link-only pages use an unlisted ID and won't appear in search results."
+        },
+        "colors": {
+          "question": "What do the colors mean in the minutes?",
+          "answer": "Motions, votes, action items, and general notes each get a distinct color so readers can scan the document and find what matters in seconds."
+        },
+        "cancel": {
+          "question": "Can I cancel anytime?",
+          "answer": "Yes. Free accounts stay free forever. Paid plans can be cancelled at any time—your existing minutes remain accessible."
+        }
+      }
+    }
   },
   "header": {
     "logIn": "Log in",
     "logOut": "Log out",
-    "meetings": "Meetings"
+    "meetings": "Meetings",
+    "pricing": "Pricing",
+    "faq": "FAQ"
   },
   "footer": {
     "copyright": "© {year} ColorMinutes. All rights reserved."
@@ -132,6 +243,9 @@
     "sectionHeader": "Section header",
     "sectionContent": "Section content",
     "sectionContentPlaceholder": "Write the section content…",
+    "addSection": "Add section",
+    "removeSection": "Remove section",
+    "defaultSectionHeader": "New section",
     "loadingMeeting": "Loading meeting…",
     "notFound": "Meeting not found.",
     "statusLabels": {

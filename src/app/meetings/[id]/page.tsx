@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Plus, Trash2 } from "lucide-react";
 import { meetingsApi, type SectionInput } from "@/lib/api/meetings";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
@@ -22,15 +22,30 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import type { MeetingSection } from "@/lib/schemas";
-import { sectionColorTextClass } from "@/lib/section-colors";
+import { sectionColorAtIndex } from "@/lib/section-colors";
 
 type EditableSection = {
+  clientId: string;
   id?: string;
   header: string;
   content: string;
   sortOrder: number;
   color: MeetingSection["color"];
 };
+
+function toEditableSections(sections: MeetingSection[]): EditableSection[] {
+  return sections
+    .slice()
+    .sort((a, b) => a.sortOrder - b.sortOrder)
+    .map((section) => ({
+      clientId: section.id,
+      id: section.id,
+      header: section.header,
+      content: section.content,
+      sortOrder: section.sortOrder,
+      color: section.color,
+    }));
+}
 
 export default function MeetingMinutesPage() {
   const t = useTranslations("meetings");
@@ -50,23 +65,13 @@ export default function MeetingMinutesPage() {
   const [savedMessage, setSavedMessage] = useState<string | null>(null);
   const [publishOpen, setPublishOpen] = useState(false);
   const [publishedUrl, setPublishedUrl] = useState<string | null>(null);
+  const [syncedMeetingId, setSyncedMeetingId] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (!meeting) return;
+  if (meeting && meeting.id !== syncedMeetingId) {
+    setSyncedMeetingId(meeting.id);
     setTitle(meeting.title ?? "");
-    setSections(
-      meeting.sections
-        .slice()
-        .sort((a, b) => a.sortOrder - b.sortOrder)
-        .map((section) => ({
-          id: section.id,
-          header: section.header,
-          content: section.content,
-          sortOrder: section.sortOrder,
-          color: section.color,
-        }))
-    );
-  }, [meeting]);
+    setSections(toEditableSections(meeting.sections));
+  }
 
   useEffect(() => {
     if (meeting?.status === "ready") {
@@ -80,6 +85,8 @@ export default function MeetingMinutesPage() {
     onSuccess: (updated) => {
       queryClient.setQueryData(["meetings", meetingId], updated);
       queryClient.invalidateQueries({ queryKey: ["meetings"] });
+      setSyncedMeetingId(updated.id);
+      setSections(toEditableSections(updated.sections));
       setSavedMessage(tc("saved"));
       setTimeout(() => setSavedMessage(null), 2000);
     },
@@ -94,6 +101,37 @@ export default function MeetingMinutesPage() {
       queryClient.invalidateQueries({ queryKey: ["meetings"] });
     },
   });
+
+  const addSection = () => {
+    setSections((current) => [
+      ...current,
+      {
+        clientId: crypto.randomUUID(),
+        header: "",
+        content: "",
+        sortOrder: current.length,
+        color: sectionColorAtIndex(current.length),
+      },
+    ]);
+  };
+
+  const removeSection = (index: number) => {
+    setSections((current) => {
+      if (current.length <= 1) return current;
+      return current.filter((_, i) => i !== index);
+    });
+  };
+
+  const updateSection = (
+    index: number,
+    patch: Partial<Pick<EditableSection, "header" | "content">>
+  ) => {
+    setSections((current) => {
+      const next = [...current];
+      next[index] = { ...next[index]!, ...patch };
+      return next;
+    });
+  };
 
   if (isLoading) {
     return (
@@ -126,7 +164,7 @@ export default function MeetingMinutesPage() {
       title: title.trim(),
       sections: sections.map((section, index) => ({
         id: section.id,
-        header: section.header.trim(),
+        header: section.header.trim() || t("defaultSectionHeader"),
         content: section.content,
         sortOrder: index,
         color: section.color,
@@ -203,41 +241,61 @@ export default function MeetingMinutesPage() {
 
         <div className="space-y-6">
           {sections.map((section, index) => (
-            <Card key={section.id ?? `new-${index}`} className="border-border/80 shadow-sm">
-              <CardHeader className="pb-3">
+            <Card key={section.clientId} className="border-border/80 shadow-sm">
+              <CardHeader className="flex flex-row items-center justify-between gap-4 pb-3">
                 <CardTitle className="text-base font-medium text-muted-foreground">
                   {t("sectionLabel", { number: index + 1 })}
                 </CardTitle>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  className="gap-1.5 text-muted-foreground hover:text-destructive"
+                  disabled={sections.length <= 1}
+                  onClick={() => removeSection(index)}
+                  aria-label={t("removeSection")}
+                >
+                  <Trash2 className="size-4" aria-hidden />
+                  {t("removeSection")}
+                </Button>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor={`section-header-${index}`}>{t("sectionHeader")}</Label>
+                  <Label htmlFor={`section-header-${section.clientId}`}>
+                    {t("sectionHeader")}
+                  </Label>
                   <Input
-                    id={`section-header-${index}`}
+                    id={`section-header-${section.clientId}`}
                     value={section.header}
-                    onChange={(event) => {
-                      const next = [...sections];
-                      next[index] = { ...section, header: event.target.value };
-                      setSections(next);
-                    }}
-                    className={sectionColorTextClass[section.color]}
+                    onChange={(event) =>
+                      updateSection(index, { header: event.target.value })
+                    }
+                    placeholder={t("defaultSectionHeader")}
                   />
                 </div>
                 <div className="space-y-2">
                   <Label>{t("sectionContent")}</Label>
                   <RichTextEditor
                     value={section.content}
-                    onChange={(html) => {
-                      const next = [...sections];
-                      next[index] = { ...section, content: html };
-                      setSections(next);
-                    }}
+                    onChange={(html) => updateSection(index, { content: html })}
                     placeholder={t("sectionContentPlaceholder")}
                   />
                 </div>
               </CardContent>
             </Card>
           ))}
+        </div>
+
+        <div className="mt-6">
+          <Button
+            type="button"
+            variant="outline"
+            className="gap-2"
+            onClick={addSection}
+          >
+            <Plus className="size-4" aria-hidden />
+            {t("addSection")}
+          </Button>
         </div>
       </main>
       <SiteFooter />
