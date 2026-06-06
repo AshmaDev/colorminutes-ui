@@ -1,21 +1,18 @@
 import Link from "next/link";
 import { getTranslations } from "next-intl/server";
-import { SiteHeader } from "@/components/layout/site-header";
-import { SiteFooter } from "@/components/layout/site-footer";
+import { AppPageBackground } from "@/components/layout/app-page-background";
 import { UploadMeetingForm } from "@/components/meetings/upload-form";
+import { appBackLinkClassName, appPageMainClassName } from "@/lib/landing-styles";
+import { cn } from "@/lib/utils";
 
 export default async function NewMeetingPage() {
   const t = await getTranslations("meetings");
 
   return (
-    <div className="flex min-h-screen flex-col bg-background">
-      <SiteHeader showLogin={false} showLogout />
-      <main className="mx-auto flex w-full max-w-6xl flex-1 flex-col px-6 py-12">
+    <AppPageBackground variant="new">
+      <main className={cn(appPageMainClassName, "flex flex-col")}>
         <div className="mb-8">
-          <Link
-            href="/meetings"
-            className="text-sm font-medium text-muted-foreground hover:text-foreground"
-          >
+          <Link href="/meetings" className={appBackLinkClassName}>
             {t("backToList")}
           </Link>
         </div>
@@ -23,7 +20,6 @@ export default async function NewMeetingPage() {
           <UploadMeetingForm />
         </div>
       </main>
-      <SiteFooter />
-    </div>
+    </AppPageBackground>
   );
 }

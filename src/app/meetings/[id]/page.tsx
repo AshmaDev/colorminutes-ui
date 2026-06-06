@@ -7,22 +7,23 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
 import { ArrowLeft, Plus, Trash2 } from "lucide-react";
 import { meetingsApi, type SectionInput } from "@/lib/api/meetings";
-import { SiteFooter } from "@/components/layout/site-footer";
-import { SiteHeader } from "@/components/layout/site-header";
+import { AppPageBackground } from "@/components/layout/app-page-background";
 import { PublishDialog } from "@/components/meetings/publish-dialog";
 import { PublishStatus } from "@/components/meetings/publish-status";
 import { RichTextEditor } from "@/components/meetings/rich-text-editor";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import type { MeetingSection } from "@/lib/schemas";
-import { sectionColorAtIndex } from "@/lib/section-colors";
+import {
+  appBackLinkClassName,
+  appPageMainNarrowClassName,
+  landingButtonSecondaryClassName,
+  landingFieldClassName,
+  landingSurfaceClassName,
+} from "@/lib/landing-styles";
+import { sectionColorAtIndex, sectionColorBarClass } from "@/lib/section-colors";
+import { cn } from "@/lib/utils";
 
 type EditableSection = {
   clientId: string;
@@ -124,7 +125,7 @@ export default function MeetingMinutesPage() {
 
   const updateSection = (
     index: number,
-    patch: Partial<Pick<EditableSection, "header" | "content">>
+    patch: Partial<Pick<EditableSection, "header" | "content">>,
   ) => {
     setSections((current) => {
       const next = [...current];
@@ -135,26 +136,34 @@ export default function MeetingMinutesPage() {
 
   if (isLoading) {
     return (
-      <div className="flex min-h-screen flex-col bg-background">
-        <SiteHeader showLogin={false} showLogout />
-        <main className="mx-auto flex w-full max-w-4xl flex-1 items-center justify-center px-6 py-12 text-muted-foreground">
+      <AppPageBackground variant="editor">
+        <main
+          className={cn(
+            appPageMainNarrowClassName,
+            "flex items-center justify-center text-foreground/70",
+          )}
+        >
           {t("loadingMeeting")}
         </main>
-        <SiteFooter />
-      </div>
+      </AppPageBackground>
     );
   }
 
   if (error || !meeting || meeting.sections.length === 0) {
     return (
-      <div className="flex min-h-screen flex-col bg-background">
-        <SiteHeader showLogin={false} showLogout />
-        <main className="mx-auto flex w-full max-w-4xl flex-1 flex-col items-center justify-center gap-4 px-6 py-12">
-          <p className="text-muted-foreground">{t("notFound")}</p>
-          <Button render={<Link href="/meetings" />}>{t("backToMeetings")}</Button>
+      <AppPageBackground variant="editor">
+        <main
+          className={cn(
+            appPageMainNarrowClassName,
+            "flex flex-col items-center justify-center gap-4",
+          )}
+        >
+          <p className="text-foreground/70">{t("notFound")}</p>
+          <Button render={<Link href="/meetings" />} variant="landing">
+            {t("backToMeetings")}
+          </Button>
         </main>
-        <SiteFooter />
-      </div>
+      </AppPageBackground>
     );
   }
 
@@ -173,28 +182,26 @@ export default function MeetingMinutesPage() {
   };
 
   return (
-    <div className="flex min-h-screen flex-col bg-background">
-      <SiteHeader showLogin={false} showLogout />
-      <main className="mx-auto w-full max-w-4xl flex-1 px-6 py-12">
+    <>
+      <AppPageBackground variant="editor">
+        <main className={appPageMainNarrowClassName}>
         <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <Button
-            type="button"
-            variant="ghost"
-            className="gap-2 px-0 hover:bg-transparent self-start"
-            render={<Link href="/meetings" />}
+          <Link
+            href="/meetings"
+            className={cn(appBackLinkClassName, "inline-flex items-center gap-2 self-start")}
           >
             <ArrowLeft className="size-4" aria-hidden />
             {t("backToMeetings")}
-          </Button>
+          </Link>
           <div className="flex flex-wrap items-center gap-2 sm:justify-end">
             {savedMessage && (
-              <span className="text-sm text-muted-foreground" role="status">
+              <span className="text-sm text-foreground/70" role="status">
                 {savedMessage}
               </span>
             )}
             <Button
               type="button"
-              variant="outline"
+              variant="landing"
               disabled={saveMutation.isPending}
               onClick={handleSave}
             >
@@ -202,13 +209,16 @@ export default function MeetingMinutesPage() {
             </Button>
             <Button
               type="button"
-              variant="outline"
+              variant="landing"
+              className={landingButtonSecondaryClassName}
               render={<Link href={`/meetings/${meetingId}/preview`} />}
             >
               {t("preview")}
             </Button>
             <Button
               type="button"
+              variant="landing"
+              className={landingButtonSecondaryClassName}
               onClick={() => {
                 setPublishedUrl(null);
                 setPublishOpen(true);
@@ -227,10 +237,11 @@ export default function MeetingMinutesPage() {
               value={title}
               onChange={(event) => setTitle(event.target.value)}
               placeholder={t("titlePlaceholder")}
+              className={landingFieldClassName}
             />
           </div>
           <div className="flex items-center gap-2 text-sm">
-            <span className="text-muted-foreground">{t("publishStatus")}:</span>
+            <span className="text-foreground/70">{t("publishStatus")}:</span>
             <PublishStatus
               visibility={meeting.visibility}
               publishedAt={meeting.publishedAt}
@@ -241,16 +252,28 @@ export default function MeetingMinutesPage() {
 
         <div className="space-y-6">
           {sections.map((section, index) => (
-            <Card key={section.clientId} className="border-border/80 shadow-sm">
-              <CardHeader className="flex flex-row items-center justify-between gap-4 pb-3">
-                <CardTitle className="text-base font-medium text-muted-foreground">
-                  {t("sectionLabel", { number: index + 1 })}
-                </CardTitle>
+            <div
+              key={section.clientId}
+              className={cn(landingSurfaceClassName, "p-6 sm:p-8")}
+            >
+              <div className="mb-4 flex flex-row items-center justify-between gap-4">
+                <div className="flex items-center gap-3">
+                  <span
+                    className={cn(
+                      "h-8 w-1 shrink-0 rounded-full",
+                      sectionColorBarClass[section.color],
+                    )}
+                    aria-hidden
+                  />
+                  <p className="text-base font-medium text-foreground/70">
+                    {t("sectionLabel", { number: index + 1 })}
+                  </p>
+                </div>
                 <Button
                   type="button"
                   variant="ghost"
                   size="sm"
-                  className="gap-1.5 text-muted-foreground hover:text-destructive"
+                  className="gap-1.5 text-foreground/60 hover:text-destructive"
                   disabled={sections.length <= 1}
                   onClick={() => removeSection(index)}
                   aria-label={t("removeSection")}
@@ -258,8 +281,8 @@ export default function MeetingMinutesPage() {
                   <Trash2 className="size-4" aria-hidden />
                   {t("removeSection")}
                 </Button>
-              </CardHeader>
-              <CardContent className="space-y-4">
+              </div>
+              <div className="space-y-4">
                 <div className="space-y-2">
                   <Label htmlFor={`section-header-${section.clientId}`}>
                     {t("sectionHeader")}
@@ -271,6 +294,7 @@ export default function MeetingMinutesPage() {
                       updateSection(index, { header: event.target.value })
                     }
                     placeholder={t("defaultSectionHeader")}
+                    className={landingFieldClassName}
                   />
                 </div>
                 <div className="space-y-2">
@@ -281,24 +305,24 @@ export default function MeetingMinutesPage() {
                     placeholder={t("sectionContentPlaceholder")}
                   />
                 </div>
-              </CardContent>
-            </Card>
+              </div>
+            </div>
           ))}
         </div>
 
         <div className="mt-6">
           <Button
             type="button"
-            variant="outline"
-            className="gap-2"
+            variant="landing"
+            className={cn("gap-2", landingButtonSecondaryClassName)}
             onClick={addSection}
           >
             <Plus className="size-4" aria-hidden />
             {t("addSection")}
           </Button>
         </div>
-      </main>
-      <SiteFooter />
+        </main>
+      </AppPageBackground>
 
       <PublishDialog
         open={publishOpen}
@@ -307,6 +331,6 @@ export default function MeetingMinutesPage() {
         isPublishing={publishMutation.isPending}
         publishedUrl={publishedUrl}
       />
-    </div>
+    </>
   );
 }

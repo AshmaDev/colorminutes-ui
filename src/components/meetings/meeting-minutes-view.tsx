@@ -3,6 +3,9 @@
 import DOMPurify from "dompurify";
 import { useTranslations } from "next-intl";
 import type { MeetingSection } from "@/lib/schemas";
+import { sectionColorBarClass } from "@/lib/section-colors";
+import { cn } from "@/lib/utils";
+
 type MeetingMinutesViewProps = {
   title: string | null;
   sections: MeetingSection[];
@@ -30,10 +33,10 @@ export function MeetingMinutesView({
           aria-label={t("tableOfContents")}
           className="sticky top-8 space-y-4"
         >
-          <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+          <p className="text-xs font-medium uppercase tracking-[0.2em] text-foreground/70">
             {t("tableOfContents")}
           </p>
-          <ul className="space-y-1 border-l border-border/60 pl-4">
+          <ul className="space-y-1 border-l border-foreground/10 pl-4">
             {sorted.map((section) => (
               <li key={section.id}>
                 <a
@@ -50,7 +53,7 @@ export function MeetingMinutesView({
 
       <article className="min-w-0 flex-1 lg:max-w-2xl">
         <header className="mb-16 text-center">
-          <h1 className="text-4xl font-bold leading-tight tracking-tight text-foreground sm:text-5xl">
+          <h1 className="font-heading text-4xl font-semibold leading-tight tracking-tight text-foreground sm:text-5xl">
             {title ?? untitledLabel}
           </h1>
         </header>
@@ -60,13 +63,22 @@ export function MeetingMinutesView({
             <section
               key={section.id}
               id={sectionAnchorId(section.id)}
-              className="scroll-mt-8 border-t border-border/50 pt-12 first:border-t-0 first:pt-0"
+              className="scroll-mt-8 border-t border-foreground/10 pt-12 first:border-t-0 first:pt-0"
             >
-              <h2 className="mb-6 text-3xl font-bold leading-snug tracking-tight text-foreground sm:text-4xl">
-                {section.header}
-              </h2>
+              <div className="mb-6 flex items-center gap-3">
+                <span
+                  className={cn(
+                    "h-10 w-1 shrink-0 rounded-full",
+                    sectionColorBarClass[section.color],
+                  )}
+                  aria-hidden
+                />
+                <h2 className="font-heading text-3xl font-semibold leading-snug tracking-tight text-foreground sm:text-4xl">
+                  {section.header}
+                </h2>
+              </div>
               <div
-                className="prose prose-lg max-w-none text-foreground/90 [&_a]:text-primary [&_a]:underline [&_ol]:list-decimal [&_ul]:list-disc [&_ol]:pl-6 [&_ul]:pl-6 [&_p]:leading-relaxed"
+                className="prose prose-lg max-w-none text-foreground/90 [&_a]:text-foreground [&_a]:underline [&_ol]:list-decimal [&_ul]:list-disc [&_ol]:pl-6 [&_ul]:pl-6 [&_p]:leading-relaxed"
                 dangerouslySetInnerHTML={{
                   __html: DOMPurify.sanitize(section.content),
                 }}
@@ -76,7 +88,7 @@ export function MeetingMinutesView({
         </div>
 
         {createdAtLabel && (
-          <footer className="mt-20 border-t border-border/50 pt-8 text-left text-sm text-muted-foreground">
+          <footer className="mt-20 border-t border-foreground/10 pt-8 text-left text-sm text-foreground/60">
             {createdAtLabel}
           </footer>
         )}

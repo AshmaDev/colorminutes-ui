@@ -5,7 +5,9 @@ import { useTranslations } from "next-intl";
 import { Check, Copy } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
+import { landingSurfaceClassName } from "@/lib/landing-styles";
 import type { MeetingVisibility } from "@/lib/schemas";
+import { cn } from "@/lib/utils";
 
 type PublishDialogProps = {
   open: boolean;
@@ -55,15 +57,15 @@ export function PublishDialog({
   return (
     <dialog
       ref={dialogRef}
-      className="fixed top-1/2 left-1/2 z-50 m-0 w-[calc(100%-2rem)] max-w-md -translate-x-1/2 -translate-y-1/2 rounded-2xl border border-border bg-background p-0 shadow-xl backdrop:bg-black/40"
+      className="fixed top-1/2 left-1/2 z-50 m-0 w-[calc(100%-2rem)] max-w-md -translate-x-1/2 -translate-y-1/2 rounded-3xl border-0 bg-transparent p-0 shadow-none backdrop:bg-black/40"
       onClose={onClose}
     >
-      <form method="dialog" className="space-y-6 p-6">
+      <form method="dialog" className={cn(landingSurfaceClassName, "space-y-6 p-6")}>
         <div className="space-y-2">
-          <h2 className="text-xl font-semibold">
+          <h2 className="font-heading text-xl font-semibold tracking-tight">
             {publishedUrl ? t("publishDialog.publishedTitle") : t("publishDialog.title")}
           </h2>
-          <p className="text-sm text-muted-foreground">
+          <p className="text-sm text-foreground/70">
             {publishedUrl
               ? t("publishDialog.publishedDescription")
               : t("publishDialog.description")}
@@ -72,10 +74,10 @@ export function PublishDialog({
 
         {publishedUrl ? (
           <div className="space-y-3">
-            <div className="rounded-lg border border-border/60 bg-muted/30 px-3 py-2 text-sm break-all">
+            <div className="rounded-2xl bg-foreground/[0.04] px-3 py-2 text-sm break-all">
               {publishedUrl}
             </div>
-            <Button type="button" className="w-full gap-2" onClick={copyLink}>
+            <Button type="button" variant="landing" className="w-full gap-2" onClick={copyLink}>
               {copied ? (
                 <>
                   <Check className="size-4" />
@@ -92,7 +94,7 @@ export function PublishDialog({
         ) : (
           <fieldset className="space-y-3">
             <legend className="sr-only">{t("publishDialog.visibilityLegend")}</legend>
-            <label className="flex cursor-pointer gap-3 rounded-xl border border-border/60 p-4 has-checked:border-primary has-checked:bg-primary/5">
+            <label className="flex cursor-pointer gap-3 rounded-2xl border border-foreground/10 p-4 has-checked:border-brand-lilac has-checked:bg-brand-lilac/15">
               <input
                 type="radio"
                 name="visibility"
@@ -103,12 +105,12 @@ export function PublishDialog({
               />
               <span>
                 <Label className="text-base">{t("publishDialog.publicTitle")}</Label>
-                <p className="text-sm text-muted-foreground">
+                <p className="text-sm text-foreground/70">
                   {t("publishDialog.publicDescription")}
                 </p>
               </span>
             </label>
-            <label className="flex cursor-pointer gap-3 rounded-xl border border-border/60 p-4 has-checked:border-primary has-checked:bg-primary/5">
+            <label className="flex cursor-pointer gap-3 rounded-2xl border border-foreground/10 p-4 has-checked:border-brand-lilac has-checked:bg-brand-lilac/15">
               <input
                 type="radio"
                 name="visibility"
@@ -119,7 +121,7 @@ export function PublishDialog({
               />
               <span>
                 <Label className="text-base">{t("publishDialog.linkTitle")}</Label>
-                <p className="text-sm text-muted-foreground">
+                <p className="text-sm text-foreground/70">
                   {t("publishDialog.linkDescription")}
                 </p>
               </span>
@@ -128,12 +130,13 @@ export function PublishDialog({
         )}
 
         <div className="flex justify-end gap-2">
-          <Button type="button" variant="outline" onClick={onClose}>
+          <Button type="button" variant="ghost" onClick={onClose}>
             {publishedUrl ? t("publishDialog.close") : t("publishDialog.cancel")}
           </Button>
           {!publishedUrl && (
             <Button
               type="button"
+              variant="landing"
               disabled={isPublishing}
               onClick={() => onPublish(visibility)}
             >

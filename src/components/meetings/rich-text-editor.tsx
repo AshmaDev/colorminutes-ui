@@ -6,6 +6,7 @@ import { EditorContent, useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import { Bold, Italic, Link2, List, ListOrdered } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { landingFieldClassName } from "@/lib/landing-styles";
 import { cn } from "@/lib/utils";
 
 type RichTextEditorProps = {
@@ -27,7 +28,7 @@ export function RichTextEditor({
       StarterKit,
       Link.configure({
         openOnClick: false,
-        HTMLAttributes: { class: "text-primary underline" },
+        HTMLAttributes: { class: "text-foreground underline" },
       }),
     ],
     content: value,
@@ -51,7 +52,12 @@ export function RichTextEditor({
 
   if (!editor) {
     return (
-      <div className="min-h-32 rounded-lg border border-input bg-muted/20 animate-pulse" />
+      <div
+        className={cn(
+          landingFieldClassName,
+          "min-h-32 animate-pulse bg-foreground/[0.04]",
+        )}
+      />
     );
   }
 
@@ -67,8 +73,8 @@ export function RichTextEditor({
   };
 
   return (
-    <div className={cn("rounded-lg border border-input bg-transparent", className)}>
-      <div className="flex flex-wrap gap-1 border-b border-border/60 px-2 py-1.5">
+    <div className={cn("overflow-hidden rounded-2xl", landingFieldClassName, className)}>
+      <div className="flex flex-wrap gap-1 rounded-t-2xl bg-foreground/[0.04] px-2 py-1.5">
         <Button
           type="button"
           size="sm"
@@ -122,7 +128,7 @@ export function RichTextEditor({
       </div>
       <EditorContent editor={editor} />
       {!value.replace(/<[^>]*>/g, "").trim() && placeholder && (
-        <p className="pointer-events-none -mt-24 px-4 text-sm text-muted-foreground">
+        <p className="pointer-events-none -mt-24 px-4 text-sm text-foreground/60">
           {placeholder}
         </p>
       )}

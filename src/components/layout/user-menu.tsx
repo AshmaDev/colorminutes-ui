@@ -28,12 +28,12 @@ export function UserMenu() {
         render={
           <Button
             variant="ghost"
-            className="gap-2 px-2"
+            className="gap-2 px-2 hover:bg-foreground/[0.04]"
             aria-label={t("accountMenu")}
           />
         }
       >
-        <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-primary/20 text-sm font-medium text-primary-foreground">
+        <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-brand-lilac/50 text-sm font-medium text-foreground">
           {initial}
         </span>
         <span className="hidden max-w-[140px] truncate sm:inline">{user.email}</span>

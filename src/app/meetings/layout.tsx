@@ -2,6 +2,9 @@
 
 import { Suspense } from "react";
 import { MeetingsAuthGuard } from "@/components/auth/meetings-auth-guard";
+import { AppPageBackground } from "@/components/layout/app-page-background";
+import { SiteFooter } from "@/components/layout/site-footer";
+import { SiteHeader } from "@/components/layout/site-header";
 
 export default function MeetingsLayout({
   children,
@@ -11,12 +14,24 @@ export default function MeetingsLayout({
   return (
     <Suspense
       fallback={
-        <div className="flex flex-1 items-center justify-center py-24 text-muted-foreground">
-          Loading…
+        <div className="flex min-h-screen flex-col text-foreground">
+          <SiteHeader variant="landing" showLogin={false} showLogout />
+          <AppPageBackground variant="list">
+            <div className="flex flex-1 items-center justify-center py-24 text-foreground/70">
+              Loading…
+            </div>
+          </AppPageBackground>
+          <SiteFooter variant="landing" />
         </div>
       }
     >
-      <MeetingsAuthGuard>{children}</MeetingsAuthGuard>
+      <MeetingsAuthGuard>
+        <div className="flex min-h-screen flex-col text-foreground">
+          <SiteHeader variant="landing" showLogin={false} showLogout />
+          {children}
+          <SiteFooter variant="landing" />
+        </div>
+      </MeetingsAuthGuard>
     </Suspense>
   );
 }

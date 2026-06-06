@@ -136,6 +136,8 @@
   }
   [data-slot="button"] {
     cursor: pointer;
+    font-family: var(--font-sans);
+    font-weight: 500;
   }
   [data-slot="button"]:disabled {
     cursor: not-allowed;

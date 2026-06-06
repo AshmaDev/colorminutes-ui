@@ -2,17 +2,11 @@
 
 import Link from "next/link";
 import { useTranslations } from "next-intl";
-import { SiteHeader } from "@/components/layout/site-header";
-import { SiteFooter } from "@/components/layout/site-footer";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { AppPageBackground } from "@/components/layout/app-page-background";
+import { AppPageHeader } from "@/components/layout/app-page-header";
 import { useAuth } from "@/providers/auth-provider";
+import { appPageMainClassName, landingSurfaceClassName } from "@/lib/landing-styles";
+import { cn } from "@/lib/utils";
 
 function formatDate(iso: string): string {
   return new Date(iso).toLocaleDateString(undefined, {
@@ -26,44 +20,47 @@ export default function ProfilePage() {
   const { user, isLoading } = useAuth();
 
   return (
-    <div className="flex min-h-screen flex-col bg-background">
-      <SiteHeader showLogin={false} showLogout />
-      <main className="mx-auto flex w-full max-w-6xl flex-1 flex-col px-6 py-12">
-        <div className="mb-10">
-          <h1 className="text-3xl font-semibold tracking-tight">{t("title")}</h1>
-          <p className="mt-2 text-muted-foreground">{t("description")}</p>
-        </div>
+    <AppPageBackground variant="profile">
+      <main className={cn(appPageMainClassName, "flex flex-col")}>
+        <AppPageHeader
+          className="mb-10"
+          title={t("title")}
+          description={t("description")}
+        />
 
         {isLoading ? (
-          <p className="text-muted-foreground">{tCommon("saving")}</p>
+          <p className="text-foreground/70">{tCommon("saving")}</p>
         ) : user ? (
-          <Card className="max-w-lg">
-            <CardHeader>
-              <CardTitle>{t("title")}</CardTitle>
-              <CardDescription>{user.email}</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
+          <div className={cn(landingSurfaceClassName, "max-w-lg p-6 sm:p-8")}>
+            <div className="space-y-1 border-b border-foreground/10 pb-6">
+              <h2 className="font-heading text-2xl font-semibold tracking-tight">
+                {t("title")}
+              </h2>
+              <p className="text-sm text-foreground/70">{user.email}</p>
+            </div>
+            <div className="space-y-4 pt-6">
               <div>
-                <p className="text-sm font-medium text-muted-foreground">{t("email")}</p>
+                <p className="text-sm font-medium text-foreground/70">{t("email")}</p>
                 <p className="mt-1">{user.email}</p>
               </div>
               <div>
-                <p className="text-sm font-medium text-muted-foreground">{t("memberSince")}</p>
+                <p className="text-sm font-medium text-foreground/70">
+                  {t("memberSince")}
+                </p>
                 <p className="mt-1">{formatDate(user.createdAt)}</p>
               </div>
-            </CardContent>
-            <CardFooter className="border-t">
+            </div>
+            <div className="mt-6 border-t border-foreground/10 pt-6">
               <Link
                 href="/forgot-password"
-                className="text-sm text-primary underline-offset-4 hover:underline"
+                className="text-sm text-foreground/70 underline-offset-4 hover:text-foreground hover:underline"
               >
                 {t("changePassword")}
               </Link>
-            </CardFooter>
-          </Card>
+            </div>
+          </div>
         ) : null}
       </main>
-      <SiteFooter />
-    </div>
+    </AppPageBackground>
   );
 }

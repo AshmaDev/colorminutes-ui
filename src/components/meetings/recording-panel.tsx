@@ -8,6 +8,8 @@ import { Mic, Pause, Play, Square } from "lucide-react";
 import { meetingsApi } from "@/lib/api/meetings";
 import { Button } from "@/components/ui/button";
 import { UploadProgress } from "@/components/meetings/upload-progress";
+import { landingButtonSecondaryClassName } from "@/lib/landing-styles";
+import { cn } from "@/lib/utils";
 
 const MAX_RECORDING_SECONDS = 3600;
 
@@ -195,13 +197,13 @@ export function RecordingPanel() {
       )}
 
       <div className="space-y-4">
-        <div className="flex flex-col items-center justify-center gap-4 rounded-xl border-2 border-dashed border-primary/40 bg-primary/10 px-6 py-10">
-          <span className="flex size-12 items-center justify-center rounded-full bg-primary/25 text-primary">
+        <div className="flex flex-col items-center justify-center gap-4 rounded-2xl border-2 border-dashed border-foreground/10 bg-brand-sky/15 px-6 py-10">
+          <span className="flex size-12 items-center justify-center rounded-full bg-brand-sky/40 text-foreground">
             <Mic className="size-6" aria-hidden />
           </span>
 
           {state === "idle" && (
-            <p className="max-w-xs text-center text-sm text-muted-foreground">
+            <p className="max-w-xs text-center text-sm text-foreground/70">
               {t("idleHint")}
             </p>
           )}
@@ -211,14 +213,14 @@ export function RecordingPanel() {
               <p className="font-mono text-3xl font-semibold tabular-nums">
                 {formatDuration(elapsed)}
               </p>
-              <p className="mt-1 text-xs text-muted-foreground">
+              <p className="mt-1 text-xs text-foreground/60">
                 {t("remaining", { time: formatDuration(remaining) })}
               </p>
             </div>
           )}
 
           {state === "stopped" && (
-            <p className="text-center text-sm text-muted-foreground">
+            <p className="text-center text-sm text-foreground/70">
               {t("complete", { time: formatDuration(elapsed) })}
             </p>
           )}
@@ -232,19 +234,25 @@ export function RecordingPanel() {
 
         <div className="flex flex-wrap gap-3">
           {state === "idle" && (
-            <Button type="button" className="flex-1" size="lg" onClick={handleStart}>
+            <Button
+              type="button"
+              variant="landing"
+              className="flex-1"
+              size="lg"
+              onClick={handleStart}
+            >
               {t("start")}
             </Button>
           )}
 
           {(state === "recording" || state === "paused") && (
             <>
-              <Button
-                type="button"
-                variant="outline"
-                className="flex-1 gap-2"
-                onClick={handlePauseResume}
-              >
+                <Button
+                  type="button"
+                  variant="landing"
+                  className={cn("flex-1 gap-2", landingButtonSecondaryClassName)}
+                  onClick={handlePauseResume}
+                >
                 {state === "recording" ? (
                   <>
                     <Pause className="size-4" aria-hidden />
@@ -272,6 +280,7 @@ export function RecordingPanel() {
           {state === "stopped" && (
             <Button
               type="button"
+              variant="landing"
               className="flex-1"
               size="lg"
               disabled={uploadMutation.isPending}
