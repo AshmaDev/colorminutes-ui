@@ -1,6 +1,7 @@
 import { getTranslations } from "next-intl/server";
 import { HomeSectionLabel } from "@/components/home/home-section-label";
 import { HomeSectionTitle } from "@/components/home/home-section-title";
+import { landingSurfaceClassName } from "@/lib/landing-styles";
 import { ClickIcon, DownloadIcon, GlobeIcon, LockIcon } from "../icons";
 
 const items = [
@@ -24,7 +25,7 @@ export async function HomePublish() {
           </p>
         </div>
 
-        <div className="grid border border-black lg:grid-cols-2">
+        <div className={`grid lg:grid-cols-2 ${landingSurfaceClassName}`}>
           {items.map(({ key, icon: Icon }, index) => (
             <article
               key={key}
@@ -33,7 +34,7 @@ export async function HomePublish() {
             >
               <div className="mb-8 flex items-start justify-between">
                 <Icon className="size-12 text-foreground" aria-hidden />
-                <span className="inline-flex items-center gap-1.5 border border-black bg-black px-3 py-1 text-xs font-medium uppercase tracking-wider text-white">
+                <span className="inline-flex items-center gap-1.5 rounded-full border border-black bg-black px-3 py-1 text-xs font-medium uppercase tracking-wider text-white">
                   <LockIcon className="size-6 text-white" aria-hidden />
                   {t(`${key}.secure`)}
                 </span>

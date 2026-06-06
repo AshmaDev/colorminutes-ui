@@ -1,6 +1,7 @@
 import { getTranslations } from "next-intl/server";
 import { HomeSectionLabel } from "@/components/home/home-section-label";
 import { HomeSectionTitle } from "@/components/home/home-section-title";
+import { landingSurfaceClassName } from "@/lib/landing-styles";
 import { ClickIcon, PdfIcon, RecordIcon, UploadIcon } from "../icons";
 
 const options = [
@@ -20,7 +21,7 @@ export async function HomeOptions() {
           <HomeSectionTitle>{t("title")}</HomeSectionTitle>
         </div>
 
-        <div className="grid border border-black lg:grid-cols-3">
+        <div className={`grid lg:grid-cols-3 ${landingSurfaceClassName}`}>
           {options.map(({ key, icon: Icon }, index) => (
             <article
               key={key}

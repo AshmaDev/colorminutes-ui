@@ -2,6 +2,8 @@ import { getTranslations } from "next-intl/server";
 import { HomeHeroActions } from "@/components/home/home-hero-actions";
 import { HomeSectionLabel } from "@/components/home/home-section-label";
 import { HomeSectionTitle } from "@/components/home/home-section-title";
+import { landingSurfaceClassName } from "@/lib/landing-styles";
+import { cn } from "@/lib/utils";
 
 export async function HomeHero() {
   const t = await getTranslations("home");
@@ -22,14 +24,7 @@ export async function HomeHero() {
         </div>
 
         <div className="relative mx-auto w-full max-w-lg lg:max-w-none">
-          <div className="border border-black bg-white p-6 sm:p-8">
-            <div className="mb-6 flex gap-2 border-b border-black pb-4">
-              <span className="h-2 flex-1 bg-brand-peach" />
-              <span className="h-2 flex-1 bg-brand-pink" />
-              <span className="h-2 flex-1 bg-brand-lilac" />
-              <span className="h-2 flex-1 bg-brand-sage" />
-              <span className="h-2 flex-1 bg-primary" />
-            </div>
+          <div className={cn(landingSurfaceClassName, "bg-white p-6 sm:p-8")}>
             <div className="space-y-4">
               <p className="text-xs font-medium uppercase tracking-[0.15em]">
                 {t("previewTitle")}

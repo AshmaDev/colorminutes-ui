@@ -146,9 +146,18 @@
   "header": {
     "logIn": "Log in",
     "logOut": "Log out",
+    "profile": "Profile",
+    "accountMenu": "Account menu",
     "meetings": "Meetings",
     "pricing": "Pricing",
     "faq": "FAQ"
+  },
+  "profile": {
+    "title": "Profile",
+    "description": "Your account details and settings.",
+    "email": "Email",
+    "memberSince": "Member since",
+    "changePassword": "Change password"
   },
   "footer": {
     "copyright": "© {year} ColorMinutes. All rights reserved."

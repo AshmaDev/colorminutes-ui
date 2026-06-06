@@ -5,6 +5,7 @@ import { ArrowRight } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Logo } from "@/components/logo";
 import { Button } from "@/components/ui/button";
+import { UserMenu } from "@/components/layout/user-menu";
 import { useAuth } from "@/providers/auth-provider";
 
 type SiteHeaderProps = {
@@ -19,7 +20,7 @@ export function SiteHeader({
   variant = "default",
 }: SiteHeaderProps) {
   const t = useTranslations("header");
-  const { isAuthenticated, isLoading, logout } = useAuth();
+  const { isAuthenticated, isLoading } = useAuth();
   const shouldShowLogin = showLogin && !isLoading && !isAuthenticated;
   const shouldShowMeetings = showLogin && !isLoading && isAuthenticated && !showLogout;
   const isLanding = variant === "landing";
@@ -56,11 +57,7 @@ export function SiteHeader({
               </Link>
             </>
           )}
-          {showLogout && (
-            <Button type="button" variant="ghost" onClick={logout}>
-              {t("logOut")}
-            </Button>
-          )}
+          {showLogout && <UserMenu />}
           {shouldShowMeetings && (
             <Button render={<Link href="/meetings" />} variant={isLanding ? "landing" : "default"}>
               {t("meetings")}

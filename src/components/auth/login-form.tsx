@@ -9,10 +9,8 @@ import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { landingFieldClassName } from "@/lib/landing-styles";
 import { useAuth } from "@/providers/auth-provider";
-
-const authFieldClassName =
-  "rounded-none border-black focus-visible:border-black focus-visible:ring-black/20";
 
 function LoginFormInner() {
   const t = useTranslations("auth.login");
@@ -61,7 +59,7 @@ function LoginFormInner() {
             type="email"
             placeholder={tc("emailPlaceholder")}
             autoComplete="email"
-            className={authFieldClassName}
+            className={landingFieldClassName}
             required
           />
         </div>
@@ -81,7 +79,7 @@ function LoginFormInner() {
             type="password"
             placeholder={tc("passwordPlaceholder")}
             autoComplete="current-password"
-            className={authFieldClassName}
+            className={landingFieldClassName}
             required
           />
         </div>

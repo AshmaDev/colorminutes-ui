@@ -4,6 +4,7 @@ import { getTranslations } from "next-intl/server";
 import { HomeSectionLabel } from "@/components/home/home-section-label";
 import { HomeSectionTitle } from "@/components/home/home-section-title";
 import { Button } from "@/components/ui/button";
+import { landingSurfaceClassName } from "@/lib/landing-styles";
 import { cn } from "@/lib/utils";
 
 const tiers = ["free", "pro", "team"] as const;
@@ -20,7 +21,7 @@ export async function HomePricing() {
           <p className="text-base leading-relaxed text-foreground/80">{t("subtitle")}</p>
         </div>
 
-        <div className="grid border border-black lg:grid-cols-3">
+        <div className={cn("grid lg:grid-cols-3", landingSurfaceClassName)}>
           {tiers.map((tier, index) => {
             const isHighlighted = tier === "pro";
             const features = t.raw(`${tier}.features`) as string[];

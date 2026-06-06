@@ -5,6 +5,7 @@ import { ChevronDown } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { HomeSectionLabel } from "@/components/home/home-section-label";
 import { HomeSectionTitle } from "@/components/home/home-section-title";
+import { landingSurfaceClassName } from "@/lib/landing-styles";
 import { cn } from "@/lib/utils";
 
 const faqKeys = ["security", "formats", "ocr", "publish", "colors", "cancel"] as const;
@@ -21,7 +22,7 @@ export function HomeFaq() {
           <HomeSectionTitle>{t("title")}</HomeSectionTitle>
         </div>
 
-        <div className="border border-black">
+        <div className={landingSurfaceClassName}>
           {faqKeys.map((key, index) => {
             const isOpen = openKey === key;
 

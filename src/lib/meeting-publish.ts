@@ -1,4 +1,4 @@
-import type { Meeting, MeetingVisibility } from "@/lib/schemas";
+import type { MeetingVisibility } from "@/lib/schemas";
 
 export function isMeetingPublished(meeting: {
   visibility: MeetingVisibility;

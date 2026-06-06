@@ -8,10 +8,8 @@ import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { landingFieldClassName } from "@/lib/landing-styles";
 import { useAuth } from "@/providers/auth-provider";
-
-const authFieldClassName =
-  "rounded-none border-black focus-visible:border-black focus-visible:ring-black/20";
 
 export function RegisterForm() {
   const t = useTranslations("auth.register");
@@ -58,7 +56,7 @@ export function RegisterForm() {
             type="email"
             placeholder={tc("emailPlaceholder")}
             autoComplete="email"
-            className={authFieldClassName}
+            className={landingFieldClassName}
             required
           />
         </div>
@@ -70,7 +68,7 @@ export function RegisterForm() {
             type="password"
             placeholder={tc("passwordMinPlaceholder")}
             autoComplete="new-password"
-            className={authFieldClassName}
+            className={landingFieldClassName}
             minLength={8}
             required
           />

@@ -44,7 +44,7 @@ const buttonVariants = cva(
     compoundVariants: [
       {
         variant: ["landing", "landingOutline"],
-        class: "text-sm",
+        class: "rounded-xl text-sm",
       },
     ],
   }

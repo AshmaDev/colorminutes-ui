@@ -1,6 +1,7 @@
 import { AuthPageAside } from "@/components/auth/auth-page-aside";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
+import { landingSurfaceClassName } from "@/lib/landing-styles";
 import { cn } from "@/lib/utils";
 
 type AuthPageLayoutProps = {
@@ -27,7 +28,7 @@ export function AuthPageLayout({ variant, children }: AuthPageLayoutProps) {
           <div className="mx-auto grid w-full max-w-7xl gap-12 px-6 py-20 lg:grid-cols-2 lg:items-center lg:gap-16 lg:py-28">
             <AuthPageAside variant={variant} />
             <div className="relative mx-auto w-full max-w-lg lg:max-w-none">
-              <div className="border border-black bg-white p-6 sm:p-8">
+              <div className={cn(landingSurfaceClassName, "bg-white p-6 sm:p-8")}>
                 {children}
               </div>
             </div>
