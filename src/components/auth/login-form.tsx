@@ -9,14 +9,10 @@ import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import { useAuth } from "@/providers/auth-provider";
+
+const authFieldClassName =
+  "rounded-none border-black focus-visible:border-black focus-visible:ring-black/20";
 
 function LoginFormInner() {
   const t = useTranslations("auth.login");
@@ -47,65 +43,70 @@ function LoginFormInner() {
   }
 
   return (
-    <Card className="w-full max-w-md border-border/80 shadow-sm">
-      <CardHeader>
-        <CardTitle className="text-xl">{t("title")}</CardTitle>
-        <CardDescription>{t("description")}</CardDescription>
-      </CardHeader>
-      <CardContent>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="email">{tc("email")}</Label>
-            <Input
-              id="email"
-              name="email"
-              type="email"
-              placeholder={tc("emailPlaceholder")}
-              autoComplete="email"
-              required
-            />
-          </div>
-          <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <Label htmlFor="password">{tc("password")}</Label>
-              <Link
-                href="/forgot-password"
-                className="text-xs text-muted-foreground underline-offset-4 hover:underline"
-              >
-                {t("forgotPassword")}
-              </Link>
-            </div>
-            <Input
-              id="password"
-              name="password"
-              type="password"
-              placeholder={tc("passwordPlaceholder")}
-              autoComplete="current-password"
-              required
-            />
-          </div>
-          {error && (
-            <p className="text-sm text-destructive" role="alert">
-              {error}
-            </p>
-          )}
-          <Button
-            type="submit"
-            className="w-full"
-            size="lg"
-            disabled={mutation.isPending}
-          >
-            {mutation.isPending ? t("signingIn") : t("signIn")}
-          </Button>
-          <p className="text-center text-sm text-muted-foreground">
-            {t("noAccount")}{" "}
-            <Link href="/register" className="font-medium text-foreground underline-offset-4 hover:underline">
-              {t("createOne")}
+    <div className="space-y-6">
+      <div className="space-y-2">
+        <h2 className="font-heading text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
+          {t("title")}
+        </h2>
+        <p className="text-sm leading-relaxed text-foreground/80 sm:text-base">
+          {t("description")}
+        </p>
+      </div>
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div className="space-y-2">
+          <Label htmlFor="email">{tc("email")}</Label>
+          <Input
+            id="email"
+            name="email"
+            type="email"
+            placeholder={tc("emailPlaceholder")}
+            autoComplete="email"
+            className={authFieldClassName}
+            required
+          />
+        </div>
+        <div className="space-y-2">
+          <div className="flex items-center justify-between">
+            <Label htmlFor="password">{tc("password")}</Label>
+            <Link
+              href="/forgot-password"
+              className="text-xs text-foreground/70 underline-offset-4 hover:text-foreground hover:underline"
+            >
+              {t("forgotPassword")}
             </Link>
+          </div>
+          <Input
+            id="password"
+            name="password"
+            type="password"
+            placeholder={tc("passwordPlaceholder")}
+            autoComplete="current-password"
+            className={authFieldClassName}
+            required
+          />
+        </div>
+        {error && (
+          <p className="text-sm text-destructive" role="alert">
+            {error}
           </p>
-        </form>
-      </CardContent>
-    </Card>
+        )}
+        <Button
+          type="submit"
+          className="w-full"
+          variant="landing"
+          size="lg"
+          disabled={mutation.isPending}
+        >
+          {mutation.isPending ? t("signingIn") : t("signIn")}
+        </Button>
+        <p className="text-center text-sm text-foreground/70">
+          {t("noAccount")}{" "}
+          <Link href="/register" className="font-medium text-foreground underline-offset-4 hover:underline">
+            {t("createOne")}
+          </Link>
+        </p>
+      </form>
+    </div>
   );
 }
 

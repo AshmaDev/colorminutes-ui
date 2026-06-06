@@ -155,6 +155,20 @@
   },
   "auth": {
     "backToHome": "← Back to home",
+    "loginPage": {
+      "badge": "Welcome back",
+      "headline": "Pick up where you",
+      "headlineHighlight": "left off",
+      "description": "Sign in to manage your meetings, generate color-coded minutes, and share polished pages with your team.",
+      "backToHome": "← Back to home"
+    },
+    "registerPage": {
+      "badge": "Get started",
+      "headline": "Start turning meetings into",
+      "headlineHighlight": "colorful minutes",
+      "description": "Create your account to upload recordings, extract motions and action items, and publish minutes your team can read at a glance.",
+      "backToHome": "← Back to home"
+    },
     "login": {
       "title": "Welcome back",
       "description": "Sign in to manage your meeting minutes.",

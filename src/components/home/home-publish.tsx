@@ -1,11 +1,11 @@
-import { ArrowUpRight, Download, Globe, ShieldCheck } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import { HomeSectionLabel } from "@/components/home/home-section-label";
 import { HomeSectionTitle } from "@/components/home/home-section-title";
+import { ClickIcon, DownloadIcon, GlobeIcon, LockIcon } from "../icons";
 
 const items = [
-  { key: "publish" as const, icon: Globe },
-  { key: "download" as const, icon: Download },
+  { key: "publish" as const, icon: GlobeIcon },
+  { key: "download" as const, icon: DownloadIcon },
 ];
 
 export async function HomePublish() {
@@ -28,14 +28,13 @@ export async function HomePublish() {
           {items.map(({ key, icon: Icon }, index) => (
             <article
               key={key}
-              className={`group p-8 sm:p-12 ${
-                index === 0 ? "border-b border-black lg:border-b-0 lg:border-r" : ""
-              }`}
+              className={`group p-8 sm:p-12 ${index === 0 ? "border-b border-black lg:border-b-0 lg:border-r" : ""
+                }`}
             >
               <div className="mb-8 flex items-start justify-between">
-                <Icon className="size-8 stroke-[1.5] text-foreground" aria-hidden />
+                <Icon className="size-12 text-foreground" aria-hidden />
                 <span className="inline-flex items-center gap-1.5 border border-black bg-black px-3 py-1 text-xs font-medium uppercase tracking-wider text-white">
-                  <ShieldCheck className="size-3.5" aria-hidden />
+                  <LockIcon className="size-6 text-white" aria-hidden />
                   {t(`${key}.secure`)}
                 </span>
               </div>
@@ -45,8 +44,8 @@ export async function HomePublish() {
               <p className="mb-8 max-w-sm text-sm leading-relaxed text-foreground/80 sm:text-base">
                 {t(`${key}.description`)}
               </p>
-              <ArrowUpRight
-                className="size-5 text-foreground opacity-60 transition-opacity group-hover:opacity-100"
+              <ClickIcon
+                className="size-12 text-foreground opacity-60 transition-opacity group-hover:opacity-100"
                 aria-hidden
               />
             </article>
