@@ -152,6 +152,12 @@
     "pricing": "Pricing",
     "faq": "FAQ"
   },
+  "sidebar": {
+    "newMeeting": "New meeting",
+    "freeDemo": "Free demo",
+    "collapseSidebar": "Collapse",
+    "expandSidebar": "Expand sidebar"
+  },
   "profile": {
     "title": "Profile",
     "description": "Your account details and settings.",

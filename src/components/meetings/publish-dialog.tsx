@@ -4,10 +4,9 @@ import { useEffect, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 import { Check, Copy } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { GlassCard } from "@/components/ui/glass-card";
 import { Label } from "@/components/ui/label";
-import { landingSurfaceClassName } from "@/lib/landing-styles";
 import type { MeetingVisibility } from "@/lib/schemas";
-import { cn } from "@/lib/utils";
 
 type PublishDialogProps = {
   open: boolean;
@@ -60,7 +59,7 @@ export function PublishDialog({
       className="fixed top-1/2 left-1/2 z-50 m-0 w-[calc(100%-2rem)] max-w-md -translate-x-1/2 -translate-y-1/2 rounded-3xl border-0 bg-transparent p-0 shadow-none backdrop:bg-black/40"
       onClose={onClose}
     >
-      <form method="dialog" className={cn(landingSurfaceClassName, "space-y-6 p-6")}>
+      <GlassCard as="form" method="dialog" surface padding="compact" className="space-y-6">
         <div className="space-y-2">
           <h2 className="font-heading text-xl font-semibold tracking-tight">
             {publishedUrl ? t("publishDialog.publishedTitle") : t("publishDialog.title")}
@@ -144,7 +143,7 @@ export function PublishDialog({
             </Button>
           )}
         </div>
-      </form>
+      </GlassCard>
     </dialog>
   );
 }

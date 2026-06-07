@@ -1,7 +1,8 @@
 import { getTranslations } from "next-intl/server";
 import { HomeSectionLabel } from "@/components/home/home-section-label";
 import { HomeSectionTitle } from "@/components/home/home-section-title";
-import { landingCardClassName, landingSectionClassName } from "@/lib/landing-styles";
+import { GlassCard } from "@/components/ui/glass-card";
+import { landingSectionClassName } from "@/lib/landing-styles";
 import { cn } from "@/lib/utils";
 import { ClickIcon, DownloadIcon, GlobeIcon, LockIcon } from "../icons";
 
@@ -28,7 +29,7 @@ export async function HomePublish() {
 
         <div className="grid gap-4 lg:grid-cols-2 lg:gap-6">
           {items.map(({ key, icon: Icon }) => (
-            <article key={key} className={cn(landingCardClassName, "group sm:p-12")}>
+            <GlassCard key={key} padding="lg" className="group">
               <div className="mb-8 flex items-start justify-between">
                 <Icon className="size-12 text-foreground" aria-hidden />
                 <span className="inline-flex items-center gap-1.5 rounded-full bg-white/70 px-3 py-1.5 text-xs font-medium uppercase tracking-wider text-foreground shadow-sm">
@@ -46,7 +47,7 @@ export async function HomePublish() {
                 className="size-12 text-foreground opacity-60 transition-opacity group-hover:opacity-100"
                 aria-hidden
               />
-            </article>
+            </GlassCard>
           ))}
         </div>
       </div>

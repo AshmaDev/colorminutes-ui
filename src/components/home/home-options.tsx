@@ -1,7 +1,8 @@
 import { getTranslations } from "next-intl/server";
 import { HomeSectionLabel } from "@/components/home/home-section-label";
 import { HomeSectionTitle } from "@/components/home/home-section-title";
-import { landingCardClassName, landingSectionClassName } from "@/lib/landing-styles";
+import { GlassCard } from "@/components/ui/glass-card";
+import { landingSectionClassName } from "@/lib/landing-styles";
 import { cn } from "@/lib/utils";
 import { ClickIcon, PdfIcon, RecordIcon, UploadIcon } from "../icons";
 
@@ -24,10 +25,7 @@ export async function HomeOptions() {
 
         <div className="grid gap-4 lg:grid-cols-3 lg:gap-6">
           {options.map(({ key, icon: Icon }) => (
-            <article
-              key={key}
-              className={cn(landingCardClassName, "group flex flex-col justify-between")}
-            >
+            <GlassCard key={key} className="group flex flex-col justify-between">
               <div className="space-y-8">
                 <div className="flex items-start justify-between">
                   <span className="font-heading text-5xl font-semibold leading-none text-foreground sm:text-6xl">
@@ -48,7 +46,7 @@ export async function HomeOptions() {
                 className="mt-10 size-12 text-foreground opacity-0 transition-opacity group-hover:opacity-100"
                 aria-hidden
               />
-            </article>
+            </GlassCard>
           ))}
         </div>
       </div>

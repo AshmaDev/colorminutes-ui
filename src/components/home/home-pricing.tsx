@@ -4,7 +4,8 @@ import { getTranslations } from "next-intl/server";
 import { HomeSectionLabel } from "@/components/home/home-section-label";
 import { HomeSectionTitle } from "@/components/home/home-section-title";
 import { Button } from "@/components/ui/button";
-import { landingButtonSecondaryClassName, landingCardClassName, landingSectionClassName } from "@/lib/landing-styles";
+import { GlassCard } from "@/components/ui/glass-card";
+import { landingButtonSecondaryClassName, landingSectionClassName } from "@/lib/landing-styles";
 import { cn } from "@/lib/utils";
 
 const tiers = ["free", "pro", "team"] as const;
@@ -27,13 +28,10 @@ export async function HomePricing() {
             const features = t.raw(`${tier}.features`) as string[];
 
             return (
-              <article
+              <GlassCard
                 key={tier}
-                className={cn(
-                  landingCardClassName,
-                  "flex flex-col",
-                  isHighlighted && "bg-white/90 shadow-xl shadow-black/[0.08]",
-                )}
+                highlighted={isHighlighted}
+                className="flex flex-col"
               >
                 {isHighlighted && (
                   <p className="mb-4 text-xs font-medium uppercase tracking-[0.15em]">
@@ -76,7 +74,7 @@ export async function HomePricing() {
                   {t(`${tier}.cta`)}
                   <ArrowRight className="size-4" aria-hidden />
                 </Button>
-              </article>
+              </GlassCard>
             );
           })}
         </div>

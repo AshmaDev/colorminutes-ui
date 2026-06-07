@@ -60,17 +60,8 @@ export default function MeetingsPage() {
   return (
     <AppPageBackground variant="list">
       <main className={cn(appPageMainClassName, "flex flex-col")}>
-      <div className="mb-10 flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
+      <div className="mb-10">
         <AppPageHeader title={t("title")} description={t("description")} />
-        <Button
-          render={<Link href="/meetings/new" />}
-          variant="landing"
-          size="lg"
-          className="gap-2 shrink-0"
-        >
-          <Plus className="size-5" aria-hidden />
-          {t("uploadMeeting")}
-        </Button>
       </div>
 
       {isLoading && (
