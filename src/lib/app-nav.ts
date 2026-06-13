@@ -13,3 +13,7 @@ export function isMeetingsActive(pathname: string): boolean {
 export function isProfileActive(pathname: string): boolean {
   return pathname === "/profile";
 }
+
+export function isSpaceSettingsActive(pathname: string): boolean {
+  return pathname.startsWith("/space/settings");
+}

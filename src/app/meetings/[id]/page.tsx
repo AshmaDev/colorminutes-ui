@@ -7,6 +7,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
 import { ArrowLeft, Plus, Trash2 } from "lucide-react";
 import { meetingsApi, type SectionInput } from "@/lib/api/meetings";
+import { AppContainer } from "@/components/layout/app-container";
 import { AppPageBackground } from "@/components/layout/app-page-background";
 import { UndoRemoveBanner } from "@/components/meetings/undo-remove-banner";
 import { PublishDialog } from "@/components/meetings/publish-dialog";
@@ -27,7 +28,6 @@ import { Label } from "@/components/ui/label";
 import type { MeetingSection } from "@/lib/schemas";
 import {
   appBackLinkClassName,
-  appPageMainNarrowClassName,
   landingButtonSecondaryClassName,
   landingFieldClassName,
   landingSurfaceClassName,
@@ -163,8 +163,7 @@ export default function MeetingMinutesPage() {
   });
 
   const publishMutation = useMutation({
-    mutationFn: (visibility: "public" | "link") =>
-      meetingsApi.publish(meetingId, visibility),
+    mutationFn: () => meetingsApi.publish(meetingId),
     onSuccess: (result) => {
       setPublishedUrl(result.url);
       queryClient.invalidateQueries({ queryKey: ["meetings", meetingId] });
@@ -285,14 +284,9 @@ export default function MeetingMinutesPage() {
   if (isLoading) {
     return (
       <AppPageBackground variant="editor">
-        <main
-          className={cn(
-            appPageMainNarrowClassName,
-            "flex items-center justify-center text-foreground/70",
-          )}
-        >
+        <AppContainer className="flex items-center justify-center text-foreground/70">
           {t("loadingMeeting")}
-        </main>
+        </AppContainer>
       </AppPageBackground>
     );
   }
@@ -300,17 +294,12 @@ export default function MeetingMinutesPage() {
   if (error || !meeting || meeting.sections.length === 0) {
     return (
       <AppPageBackground variant="editor">
-        <main
-          className={cn(
-            appPageMainNarrowClassName,
-            "flex flex-col items-center justify-center gap-4",
-          )}
-        >
+        <AppContainer className="flex flex-col items-center justify-center gap-4">
           <p className="text-foreground/70">{t("notFound")}</p>
           <Button render={<Link href="/meetings" />} variant="landing">
             {t("backToMeetings")}
           </Button>
-        </main>
+        </AppContainer>
       </AppPageBackground>
     );
   }
@@ -341,7 +330,7 @@ export default function MeetingMinutesPage() {
   return (
     <>
       <AppPageBackground variant="editor">
-        <main className={appPageMainNarrowClassName}>
+        <AppContainer>
         <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <Link
             href="/meetings"
@@ -400,7 +389,6 @@ export default function MeetingMinutesPage() {
           <div className="flex items-center gap-2 text-sm">
             <span className="text-foreground/70">{t("publishStatus")}:</span>
             <PublishStatus
-              visibility={meeting.visibility}
               publishedAt={meeting.publishedAt}
               className="text-sm"
             />
@@ -441,9 +429,10 @@ export default function MeetingMinutesPage() {
                     >
                       <Trash2 className="size-4" aria-hidden />
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
+                    <DropdownMenuContent align="end" className="w-auto">
                       <DropdownMenuItem
                         variant="destructive"
+                        className="cursor-pointer whitespace-nowrap"
                         onClick={() => removeSection(index)}
                       >
                         <Trash2 className="size-4" aria-hidden />
@@ -470,18 +459,20 @@ export default function MeetingMinutesPage() {
                 </div>
                 <div className="space-y-3">
                   <Label>{t("sectionParagraphs")}</Label>
-                  {section.paragraphs.map((paragraph, paragraphIndex) => (
-                    <SectionParagraphEditor
-                      key={paragraph.clientId}
-                      paragraph={paragraph}
-                      index={paragraphIndex}
-                      canRemove={section.paragraphs.length > 1}
-                      onChange={(patch) =>
-                        updateParagraph(index, paragraphIndex, patch)
-                      }
-                      onRemove={() => removeParagraph(index, paragraphIndex)}
-                    />
-                  ))}
+                  <div className="divide-y divide-foreground/10">
+                    {section.paragraphs.map((paragraph, paragraphIndex) => (
+                      <SectionParagraphEditor
+                        key={paragraph.clientId}
+                        paragraph={paragraph}
+                        index={paragraphIndex}
+                        canRemove={section.paragraphs.length > 1}
+                        onChange={(patch) =>
+                          updateParagraph(index, paragraphIndex, patch)
+                        }
+                        onRemove={() => removeParagraph(index, paragraphIndex)}
+                      />
+                    ))}
+                  </div>
                   <Button
                     type="button"
                     variant="ghost"
@@ -509,13 +500,13 @@ export default function MeetingMinutesPage() {
             {t("addSection")}
           </Button>
         </div>
-        </main>
+        </AppContainer>
       </AppPageBackground>
 
       <PublishDialog
         open={publishOpen}
         onClose={() => setPublishOpen(false)}
-        onPublish={(visibility) => publishMutation.mutate(visibility)}
+        onPublish={() => publishMutation.mutate()}
         isPublishing={publishMutation.isPending}
         publishedUrl={publishedUrl}
       />

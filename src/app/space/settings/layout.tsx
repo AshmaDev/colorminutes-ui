@@ -6,7 +6,7 @@ import { AppContainer } from "@/components/layout/app-container";
 import { AppPageBackground } from "@/components/layout/app-page-background";
 import { AppShell } from "@/components/layout/app-shell";
 
-export default function ProfileLayout({
+export default function SpaceSettingsLayout({
   children,
 }: {
   children: React.ReactNode;

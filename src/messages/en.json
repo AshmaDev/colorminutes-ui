@@ -154,6 +154,8 @@
   },
   "sidebar": {
     "newMeeting": "New meeting",
+    "spaceSettings": "Space settings",
+    "spaceMenu": "Space menu",
     "freeDemo": "Free demo",
     "collapseSidebar": "Collapse",
     "expandSidebar": "Expand sidebar"
@@ -307,12 +309,7 @@
     },
     "publishDialog": {
       "title": "Publish meeting",
-      "description": "Choose how others can access these minutes.",
-      "visibilityLegend": "Visibility options",
-      "publicTitle": "Public",
-      "publicDescription": "Discoverable with a readable URL based on the meeting name. Search engines may index this page.",
-      "linkTitle": "Anyone with the link",
-      "linkDescription": "Unlisted URL using the meeting ID. Search engines will not index this page.",
+      "description": "Make these minutes available according to your space visibility settings.",
       "cancel": "Cancel",
       "publishing": "Publishing…",
       "publishedTitle": "Meeting published",
@@ -392,6 +389,67 @@
     "preparing": "Preparing…",
     "hint": "Large recordings may take several minutes. Please keep this tab open.",
     "cancel": "Cancel upload"
+  },
+  "spaces": {
+    "spaceName": "Space name",
+    "spaceNamePlaceholder": "My team",
+    "spacePassword": "Space password",
+    "visibilityLabel": "Space visibility",
+    "currentSpace": "{name}",
+    "viewSpacePage": "View space page",
+    "pageTitle": "{name}",
+    "pageDescription": "Published meeting minutes in this space.",
+    "loading": "Loading space…",
+    "publishedMeetings": "Published meetings",
+    "noMeetings": "No published meetings yet.",
+    "visibility": {
+      "private": {
+        "title": "Private",
+        "description": "Only signed-in members of this space can view meetings."
+      },
+      "public": {
+        "title": "Public",
+        "description": "Anyone can view published meetings in this space."
+      },
+      "protected": {
+        "title": "Protected",
+        "description": "Anyone with the space password can view published meetings."
+      }
+    },
+    "accessGate": {
+      "title": "This space is protected",
+      "description": "Enter the space password to view published meetings.",
+      "submit": "Continue",
+      "submitting": "Verifying…",
+      "error": "Could not verify password."
+    },
+    "membersOnly": {
+      "title": "Members only",
+      "description": "Sign in with an account that belongs to this space to continue.",
+      "signIn": "Sign in"
+    },
+    "settings": {
+      "nav": "Space settings",
+      "title": "Space settings",
+      "description": "Update your space name and who can view published meetings.",
+      "spaceLink": {
+        "title": "Space page",
+        "description": "Share this link so others can view published meetings in your space."
+      },
+      "name": {
+        "title": "Space name",
+        "description": "The name shown to members of this space.",
+        "required": "Space name is required."
+      },
+      "visibility": {
+        "title": "Visibility",
+        "description": "Control who can view published meetings in this space."
+      },
+      "newPasswordOptional": "New space password",
+      "passwordHint": "Leave blank to keep the current password.",
+      "passwordRequired": "A password is required when switching to a protected space.",
+      "noChanges": "No changes to save."
+    }
   },
   "validation": {
     "passwordMin": "Password must be at least 8 characters.",

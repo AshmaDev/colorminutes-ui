@@ -67,7 +67,7 @@ export function SectionParagraphEditor({
   const VariantIcon = variantIcons[paragraph.variant];
 
   return (
-    <div className="space-y-2 rounded-2xl border border-foreground/10 bg-foreground/[0.02] p-4">
+    <div className="space-y-2 py-4">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <Label className="text-sm text-foreground/70">
           {t("paragraphLabel", { number: index + 1 })}
@@ -131,8 +131,12 @@ export function SectionParagraphEditor({
               >
                 <Trash2 className="size-4" aria-hidden />
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem variant="destructive" onClick={onRemove}>
+              <DropdownMenuContent align="end" className="w-auto">
+                <DropdownMenuItem
+                  variant="destructive"
+                  className="cursor-pointer whitespace-nowrap"
+                  onClick={onRemove}
+                >
                   <Trash2 className="size-4" aria-hidden />
                   {t("deleteParagraph")}
                 </DropdownMenuItem>

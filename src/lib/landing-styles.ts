@@ -26,12 +26,6 @@ export const appPageBackgrounds = {
 
 export type AppPageBackground = keyof typeof appPageBackgrounds;
 
-export const appPageMainClassName =
-  "mx-auto w-full max-w-6xl flex-1 px-6 py-12 lg:py-16";
-
-export const appPageMainNarrowClassName =
-  "mx-auto w-full max-w-4xl flex-1 px-6 py-12 lg:py-16";
-
 export const appPageTitleClassName =
   "font-heading text-3xl font-semibold tracking-tight text-foreground sm:text-4xl";
 

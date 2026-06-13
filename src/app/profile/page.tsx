@@ -2,10 +2,11 @@
 
 import Link from "next/link";
 import { useTranslations } from "next-intl";
+import { AppContainer } from "@/components/layout/app-container";
 import { AppPageBackground } from "@/components/layout/app-page-background";
 import { AppPageHeader } from "@/components/layout/app-page-header";
 import { useAuth } from "@/providers/auth-provider";
-import { appPageMainClassName, landingSurfaceClassName } from "@/lib/landing-styles";
+import { landingSurfaceClassName } from "@/lib/landing-styles";
 import { cn } from "@/lib/utils";
 
 function formatDate(iso: string): string {
@@ -21,7 +22,7 @@ export default function ProfilePage() {
 
   return (
     <AppPageBackground variant="profile">
-      <main className={cn(appPageMainClassName, "flex flex-col")}>
+      <AppContainer className="flex flex-col">
         <AppPageHeader
           className="mb-10"
           title={t("title")}
@@ -31,7 +32,7 @@ export default function ProfilePage() {
         {isLoading ? (
           <p className="text-foreground/70">{tCommon("saving")}</p>
         ) : user ? (
-          <div className={cn(landingSurfaceClassName, "max-w-lg p-6 sm:p-8")}>
+          <div className={cn(landingSurfaceClassName, "p-6 sm:p-8")}>
             <div className="space-y-1 border-b border-foreground/10 pb-6">
               <h2 className="font-heading text-2xl font-semibold tracking-tight">
                 {t("title")}
@@ -60,7 +61,7 @@ export default function ProfilePage() {
             </div>
           </div>
         ) : null}
-      </main>
+      </AppContainer>
     </AppPageBackground>
   );
 }

@@ -3,23 +3,26 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { CalendarDays, ChevronLeft, ChevronRight, Plus } from "lucide-react";
+import { CalendarDays, ChevronLeft, ChevronRight, Plus, Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { SidebarUserSpace } from "@/components/layout/sidebar-user-space";
+import { SidebarSpaceSelector } from "@/components/layout/sidebar-space-selector";
+import {
+  sidebarFooterControlClassName,
+  SidebarUserBlock,
+} from "@/components/layout/sidebar-user-block";
 import { useSidebar } from "@/components/layout/sidebar-provider";
-import { isMeetingsActive, isNewMeetingActive } from "@/lib/app-nav";
+import { isMeetingsActive, isNewMeetingActive, isSpaceSettingsActive } from "@/lib/app-nav";
 import { cn } from "@/lib/utils";
 
 export function AppSidebar() {
   const t = useTranslations("sidebar");
   const tHeader = useTranslations("header");
-  const tFooter = useTranslations("footer");
   const pathname = usePathname();
-  const year = new Date().getFullYear();
   const { layoutMode, collapsed, toggleCollapsed } = useSidebar();
 
   const isNewMeeting = isNewMeetingActive(pathname);
   const isMeetingsLink = isMeetingsActive(pathname);
+  const isSpaceSettings = isSpaceSettingsActive(pathname);
   const isOverlayExpanded = layoutMode === "overlay" && !collapsed;
 
   return (
@@ -30,11 +33,7 @@ export function AppSidebar() {
         isOverlayExpanded && "z-50 shadow-lg shadow-black/5",
       )}
     >
-      {!collapsed && (
-        <div className="px-3 pt-4 pb-2">
-          <SidebarUserSpace collapsed={false} />
-        </div>
-      )}
+      {!collapsed && <SidebarSpaceSelector />}
 
       <nav
         className={cn(
@@ -42,7 +41,7 @@ export function AppSidebar() {
           collapsed ? "items-center px-2 pt-4" : "px-3",
         )}
       >
-        {collapsed && <SidebarUserSpace collapsed />}
+        {collapsed && <SidebarSpaceSelector collapsed />}
         <Button
           render={<Link href="/meetings/new" />}
           variant="landing"
@@ -76,14 +75,31 @@ export function AppSidebar() {
           {!collapsed && tHeader("meetings")}
         </Link>
 
+        <Link
+          href="/space/settings"
+          title={collapsed ? t("spaceSettings") : undefined}
+          aria-label={t("spaceSettings")}
+          className={cn(
+            "flex items-center rounded-lg text-sm font-medium transition-colors",
+            collapsed
+              ? "size-9 justify-center"
+              : "gap-2 px-3 py-2",
+            isSpaceSettings
+              ? "bg-sidebar-accent text-sidebar-accent-foreground"
+              : "text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground",
+          )}
+        >
+          <Settings className="size-4 shrink-0" aria-hidden />
+          {!collapsed && t("spaceSettings")}
+        </Link>
+
         <button
           type="button"
           onClick={toggleCollapsed}
           className={cn(
-            "flex mt-auto items-center rounded-lg text-sm font-medium transition-colors",
-            collapsed
-              ? "size-9 justify-center mb-4"
-              : "w-full gap-2 px-3 py-2",
+            sidebarFooterControlClassName,
+            "mt-auto mb-4 py-2",
+            collapsed ? "justify-center" : "justify-start gap-2 px-3",
             "text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground",
           )}
           aria-label={collapsed ? t("expandSidebar") : t("collapseSidebar")}
@@ -99,18 +115,7 @@ export function AppSidebar() {
         </button>
       </nav>
 
-      {!collapsed && (
-        <div className="mt-auto flex flex-col gap-4 p-4">
-          <div className="rounded-lg border border-sidebar-border bg-sidebar-accent/50 px-3 py-3">
-            <p className="text-sm font-medium text-sidebar-foreground">
-              {t("freeDemo")}
-            </p>
-          </div>
-          <p className="text-xs text-sidebar-foreground/50">
-            {tFooter("copyright", { year })}
-          </p>
-        </div>
-      )}
+      <SidebarUserBlock collapsed={collapsed} />
     </aside>
   );
 }

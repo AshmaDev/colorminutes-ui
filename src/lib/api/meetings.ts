@@ -4,7 +4,6 @@ import {
   publicMeetingSchema,
   publishMeetingResponseSchema,
   type Meeting,
-  type MeetingVisibility,
   type ParagraphVariant,
   type PublicMeeting,
   type SourceType,
@@ -12,6 +11,12 @@ import {
 import { z } from "zod";
 import { getApiUrl, getAuthHeaders } from "./token";
 import { api, parseApiError } from "./client";
+
+const publicAccessErrorSchema = z.object({
+  error: z.string(),
+  code: z.enum(["SPACE_MEMBERS_ONLY", "SPACE_PASSWORD_REQUIRED"]).optional(),
+  spaceSlug: z.string().optional(),
+});
 
 export type UploadProgressHandler = (progress: {
   loaded: number;
@@ -61,14 +66,43 @@ export const meetingsApi = {
     }
   },
 
-  async getPublic(identifier: string): Promise<PublicMeeting> {
-    try {
-      return publicMeetingSchema.parse(
-        await api.get(`public/meetings/${identifier}`).json()
-      );
-    } catch (error) {
-      throw new Error(await parseApiError(error));
+  async getPublic(
+    identifier: string,
+    accessToken?: string | null
+  ): Promise<PublicMeeting> {
+    const headers: Record<string, string> = {};
+    const userAuth = getAuthHeaders();
+    if (userAuth.Authorization) {
+      headers.Authorization = userAuth.Authorization;
+    } else if (accessToken) {
+      headers.Authorization = `Bearer ${accessToken}`;
     }
+
+    const response = await fetch(
+      `${getApiUrl()}/public/meetings/${encodeURIComponent(identifier)}`,
+      { headers, cache: "no-store" }
+    );
+
+    if (!response.ok) {
+      const body = await response.json().catch(() => ({}));
+      const parsed = publicAccessErrorSchema.safeParse(body);
+      if (parsed.success) {
+        const error = new Error(parsed.data.error) as Error & {
+          code?: string;
+          spaceSlug?: string;
+          status: number;
+        };
+        error.code = parsed.data.code;
+        error.spaceSlug = parsed.data.spaceSlug;
+        error.status = response.status;
+        throw error;
+      }
+      throw new Error(
+        typeof body.error === "string" ? body.error : "Meeting not found."
+      );
+    }
+
+    return publicMeetingSchema.parse(await response.json());
   },
 
   async create({
@@ -160,13 +194,10 @@ export const meetingsApi = {
     }
   },
 
-  async publish(
-    id: string,
-    visibility: Extract<MeetingVisibility, "public" | "link">
-  ): Promise<{ url: string; visibility: MeetingVisibility; slug: string | null }> {
+  async publish(id: string): Promise<{ url: string; slug: string | null }> {
     try {
       return publishMeetingResponseSchema.parse(
-        await api.post(`meetings/${id}/publish`, { json: { visibility } }).json()
+        await api.post(`meetings/${id}/publish`).json()
       );
     } catch (error) {
       throw new Error(await parseApiError(error));

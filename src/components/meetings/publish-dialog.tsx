@@ -5,13 +5,11 @@ import { useTranslations } from "next-intl";
 import { Check, Copy } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { GlassCard } from "@/components/ui/glass-card";
-import { Label } from "@/components/ui/label";
-import type { MeetingVisibility } from "@/lib/schemas";
 
 type PublishDialogProps = {
   open: boolean;
   onClose: () => void;
-  onPublish: (visibility: Extract<MeetingVisibility, "public" | "link">) => void;
+  onPublish: () => void;
   isPublishing: boolean;
   publishedUrl: string | null;
 };
@@ -25,8 +23,6 @@ export function PublishDialog({
 }: PublishDialogProps) {
   const t = useTranslations("meetings");
   const dialogRef = useRef<HTMLDialogElement>(null);
-  const [visibility, setVisibility] =
-    useState<Extract<MeetingVisibility, "public" | "link">>("public");
   const [copied, setCopied] = useState(false);
 
   useEffect(() => {
@@ -90,43 +86,7 @@ export function PublishDialog({
               )}
             </Button>
           </div>
-        ) : (
-          <fieldset className="space-y-3">
-            <legend className="sr-only">{t("publishDialog.visibilityLegend")}</legend>
-            <label className="flex cursor-pointer gap-3 rounded-2xl border border-foreground/10 p-4 has-checked:border-brand-lilac has-checked:bg-brand-lilac/15">
-              <input
-                type="radio"
-                name="visibility"
-                value="public"
-                checked={visibility === "public"}
-                onChange={() => setVisibility("public")}
-                className="mt-1"
-              />
-              <span>
-                <Label className="text-base">{t("publishDialog.publicTitle")}</Label>
-                <p className="text-sm text-foreground/70">
-                  {t("publishDialog.publicDescription")}
-                </p>
-              </span>
-            </label>
-            <label className="flex cursor-pointer gap-3 rounded-2xl border border-foreground/10 p-4 has-checked:border-brand-lilac has-checked:bg-brand-lilac/15">
-              <input
-                type="radio"
-                name="visibility"
-                value="link"
-                checked={visibility === "link"}
-                onChange={() => setVisibility("link")}
-                className="mt-1"
-              />
-              <span>
-                <Label className="text-base">{t("publishDialog.linkTitle")}</Label>
-                <p className="text-sm text-foreground/70">
-                  {t("publishDialog.linkDescription")}
-                </p>
-              </span>
-            </label>
-          </fieldset>
-        )}
+        ) : null}
 
         <div className="flex justify-end gap-2">
           <Button type="button" variant="ghost" onClick={onClose}>
@@ -137,7 +97,7 @@ export function PublishDialog({
               type="button"
               variant="landing"
               disabled={isPublishing}
-              onClick={() => onPublish(visibility)}
+              onClick={onPublish}
             >
               {isPublishing ? t("publishDialog.publishing") : t("publish")}
             </Button>

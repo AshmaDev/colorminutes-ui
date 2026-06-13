@@ -5,11 +5,12 @@ import { useQuery } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
 import { Plus, FileAudio, FileText, Mic } from "lucide-react";
 import { meetingsApi } from "@/lib/api/meetings";
+import { AppContainer } from "@/components/layout/app-container";
 import { AppPageBackground } from "@/components/layout/app-page-background";
 import { AppPageHeader } from "@/components/layout/app-page-header";
 import { Button } from "@/components/ui/button";
 import { PublishStatus } from "@/components/meetings/publish-status";
-import { appPageMainClassName, landingSurfaceClassName } from "@/lib/landing-styles";
+import { landingSurfaceClassName } from "@/lib/landing-styles";
 import { cn } from "@/lib/utils";
 import type { Meeting } from "@/lib/schemas";
 
@@ -56,7 +57,7 @@ export default function MeetingsPage() {
 
   return (
     <AppPageBackground variant="list">
-      <main className={cn(appPageMainClassName, "flex flex-col")}>
+      <AppContainer className="flex flex-col">
       <div className="mb-10">
         <AppPageHeader title={t("title")} description={t("description")} />
       </div>
@@ -96,7 +97,7 @@ export default function MeetingsPage() {
           ))}
         </ul>
       )}
-      </main>
+      </AppContainer>
     </AppPageBackground>
   );
 }
@@ -142,7 +143,6 @@ function MeetingRow({
             {t(`statusLabels.${meeting.status}`)}
           </span>
           <PublishStatus
-            visibility={meeting.visibility}
             publishedAt={meeting.publishedAt}
           />
         </div>

@@ -2,17 +2,26 @@ import {
   authResponseSchema,
   forgotPasswordInputSchema,
   loginInputSchema,
+  meResponseSchema,
   messageResponseSchema,
   registerInputSchema,
   resetPasswordInputSchema,
-  userSchema,
+  type Space,
   type User,
 } from "@/lib/schemas";
 import { api, parseApiError } from "./client";
 import { setToken } from "./token";
 
 export const authApi = {
-  async register(input: { email: string; password: string }) {
+  async register(input: {
+    email: string;
+    password: string;
+    space: {
+      name: string;
+      visibility: "private" | "public" | "protected";
+      password?: string;
+    };
+  }) {
     const body = registerInputSchema.parse(input);
     try {
       const data = authResponseSchema.parse(
@@ -60,9 +69,9 @@ export const authApi = {
     }
   },
 
-  async me(): Promise<User> {
+  async me(): Promise<{ user: User; space: Space }> {
     try {
-      return userSchema.parse(await api.get("auth/me").json());
+      return meResponseSchema.parse(await api.get("auth/me").json());
     } catch (error) {
       throw new Error(await parseApiError(error));
     }

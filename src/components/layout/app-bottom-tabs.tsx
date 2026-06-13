@@ -16,6 +16,7 @@ import {
   isMeetingsActive,
   isNewMeetingActive,
   isProfileActive,
+  isSpaceSettingsActive,
 } from "@/lib/app-nav";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/providers/auth-provider";
@@ -54,6 +55,8 @@ export function AppBottomTabs() {
   const { user, isLoading, logout } = useAuth();
 
   const initial = user?.email.charAt(0).toUpperCase() ?? "?";
+  const isAccountActive =
+    isProfileActive(pathname) || isSpaceSettingsActive(pathname);
 
   return (
     <nav className="fixed inset-x-0 bottom-0 z-50 border-t border-sidebar-border bg-sidebar text-sidebar-foreground md:hidden">
@@ -82,7 +85,7 @@ export function AppBottomTabs() {
                   variant="ghost"
                   className={cn(
                     "h-auto flex-1 flex-col gap-1 rounded-none px-2 py-2 text-xs font-medium hover:bg-sidebar-accent",
-                    isProfileActive(pathname)
+                    isAccountActive
                       ? "text-sidebar-primary"
                       : "text-sidebar-foreground/60",
                   )}
@@ -98,6 +101,9 @@ export function AppBottomTabs() {
             <DropdownMenuContent align="center" side="top" sideOffset={8}>
               <DropdownMenuItem render={<Link href="/profile" />}>
                 {tHeader("profile")}
+              </DropdownMenuItem>
+              <DropdownMenuItem render={<Link href="/space/settings" />}>
+                {t("spaceSettings")}
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem variant="destructive" onClick={logout}>

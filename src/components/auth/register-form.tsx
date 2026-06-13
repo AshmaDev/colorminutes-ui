@@ -9,14 +9,17 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { landingFieldClassName } from "@/lib/landing-styles";
+import type { SpaceVisibility } from "@/lib/schemas";
 import { useAuth } from "@/providers/auth-provider";
 
 export function RegisterForm() {
   const t = useTranslations("auth.register");
+  const ts = useTranslations("spaces");
   const tc = useTranslations("common");
   const router = useRouter();
   const { register } = useAuth();
   const [error, setError] = useState<string | null>(null);
+  const [visibility, setVisibility] = useState<SpaceVisibility>("private");
 
   const mutation = useMutation({
     mutationFn: register,
@@ -31,9 +34,17 @@ export function RegisterForm() {
     event.preventDefault();
     setError(null);
     const formData = new FormData(event.currentTarget);
+    const spacePassword = formData.get("spacePassword") as string;
+
     mutation.mutate({
       email: formData.get("email") as string,
       password: formData.get("password") as string,
+      space: {
+        name: formData.get("spaceName") as string,
+        visibility,
+        password:
+          visibility === "protected" && spacePassword ? spacePassword : undefined,
+      },
     });
   }
 
@@ -73,6 +84,60 @@ export function RegisterForm() {
             required
           />
         </div>
+
+        <div className="space-y-2 border-t border-foreground/10 pt-4">
+          <Label htmlFor="spaceName">{ts("spaceName")}</Label>
+          <Input
+            id="spaceName"
+            name="spaceName"
+            type="text"
+            placeholder={ts("spaceNamePlaceholder")}
+            className={landingFieldClassName}
+            required
+          />
+        </div>
+
+        <fieldset className="space-y-3">
+          <legend className="text-sm font-medium">{ts("visibilityLabel")}</legend>
+          {(["private", "public", "protected"] as const).map((option) => (
+            <label
+              key={option}
+              className="flex cursor-pointer gap-3 rounded-2xl border border-foreground/10 p-4 has-checked:border-brand-lilac has-checked:bg-brand-lilac/15"
+            >
+              <input
+                type="radio"
+                name="spaceVisibility"
+                value={option}
+                checked={visibility === option}
+                onChange={() => setVisibility(option)}
+                className="mt-1"
+              />
+              <span>
+                <Label className="text-base">{ts(`visibility.${option}.title`)}</Label>
+                <p className="text-sm text-foreground/70">
+                  {ts(`visibility.${option}.description`)}
+                </p>
+              </span>
+            </label>
+          ))}
+        </fieldset>
+
+        {visibility === "protected" && (
+          <div className="space-y-2">
+            <Label htmlFor="spacePassword">{ts("spacePassword")}</Label>
+            <Input
+              id="spacePassword"
+              name="spacePassword"
+              type="password"
+              placeholder={tc("passwordMinPlaceholder")}
+              autoComplete="new-password"
+              className={landingFieldClassName}
+              minLength={8}
+              required
+            />
+          </div>
+        )}
+
         {error && (
           <p className="text-sm text-destructive" role="alert">
             {error}

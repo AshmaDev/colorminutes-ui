@@ -6,12 +6,12 @@ import { useQuery } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
 import { ArrowLeft } from "lucide-react";
 import { meetingsApi } from "@/lib/api/meetings";
+import { AppContainer } from "@/components/layout/app-container";
 import { AppPageBackground } from "@/components/layout/app-page-background";
 import { MeetingMinutesView } from "@/components/meetings/meeting-minutes-view";
 import { Button } from "@/components/ui/button";
 import {
   appBackLinkClassName,
-  appPageMainClassName,
 } from "@/lib/landing-styles";
 import { cn } from "@/lib/utils";
 
@@ -28,14 +28,9 @@ export default function MeetingPreviewPage() {
   if (isLoading) {
     return (
       <AppPageBackground variant="preview">
-        <main
-          className={cn(
-            appPageMainClassName,
-            "flex items-center justify-center text-foreground/70",
-          )}
-        >
+        <AppContainer className="flex items-center justify-center text-foreground/70">
           {t("loadingMeeting")}
-        </main>
+        </AppContainer>
       </AppPageBackground>
     );
   }
@@ -43,24 +38,19 @@ export default function MeetingPreviewPage() {
   if (error || !meeting) {
     return (
       <AppPageBackground variant="preview">
-        <main
-          className={cn(
-            appPageMainClassName,
-            "flex flex-col items-center justify-center gap-4",
-          )}
-        >
+        <AppContainer className="flex flex-col items-center justify-center gap-4">
           <p className="text-foreground/70">{t("notFound")}</p>
           <Button render={<Link href={`/meetings/${meetingId}`} />} variant="landing">
             {t("backToEditor")}
           </Button>
-        </main>
+        </AppContainer>
       </AppPageBackground>
     );
   }
 
   return (
     <AppPageBackground variant="preview">
-      <main className={appPageMainClassName}>
+      <AppContainer>
         <div className="mb-8 flex items-center justify-between gap-4">
           <Link
             href={`/meetings/${meetingId}`}
@@ -83,7 +73,7 @@ export default function MeetingPreviewPage() {
             }),
           })}
         />
-      </main>
+      </AppContainer>
     </AppPageBackground>
   );
 }

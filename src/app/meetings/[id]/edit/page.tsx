@@ -7,6 +7,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
 import { ArrowLeft, FileAudio, FileText, Loader2, Mic } from "lucide-react";
 import { meetingsApi } from "@/lib/api/meetings";
+import { AppContainer } from "@/components/layout/app-container";
 import { AppPageBackground } from "@/components/layout/app-page-background";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -15,7 +16,6 @@ import { PublishStatus } from "@/components/meetings/publish-status";
 import type { Meeting } from "@/lib/schemas";
 import {
   appBackLinkClassName,
-  appPageMainNarrowClassName,
   landingButtonSecondaryClassName,
   landingFieldClassName,
   landingSurfaceClassName,
@@ -99,14 +99,9 @@ export default function EditMeetingPage() {
   if (isLoading) {
     return (
       <AppPageBackground variant="edit">
-        <main
-          className={cn(
-            appPageMainNarrowClassName,
-            "flex items-center justify-center text-foreground/70",
-          )}
-        >
+        <AppContainer className="flex items-center justify-center text-foreground/70">
           {t("loadingMeeting")}
-        </main>
+        </AppContainer>
       </AppPageBackground>
     );
   }
@@ -114,17 +109,12 @@ export default function EditMeetingPage() {
   if (error || !meeting) {
     return (
       <AppPageBackground variant="edit">
-        <main
-          className={cn(
-            appPageMainNarrowClassName,
-            "flex flex-col items-center justify-center gap-4",
-          )}
-        >
+        <AppContainer className="flex flex-col items-center justify-center gap-4">
           <p className="text-foreground/70">{t("notFound")}</p>
           <Button render={<Link href="/meetings" />} variant="landing">
             {t("backToMeetings")}
           </Button>
-        </main>
+        </AppContainer>
       </AppPageBackground>
     );
   }
@@ -192,7 +182,7 @@ function EditMeetingContent({
 
   return (
     <AppPageBackground variant="edit">
-      <main className={appPageMainNarrowClassName}>
+      <AppContainer>
       <button
         type="button"
         onClick={onBack}
@@ -246,7 +236,6 @@ function EditMeetingContent({
                 <dt className="text-foreground/60">{t("publishStatus")}</dt>
                 <dd>
                   <PublishStatus
-                    visibility={meeting.visibility}
                     publishedAt={meeting.publishedAt}
                     className="text-sm"
                   />
@@ -338,7 +327,7 @@ function EditMeetingContent({
           )}
         </div>
       </div>
-      </main>
+      </AppContainer>
     </AppPageBackground>
   );
 }
