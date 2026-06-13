@@ -27,7 +27,7 @@ function AppShellContent({ children }: AppShellProps) {
           isOverlayExpanded ? "w-0" : reservedWidth,
         )}
       />
-      <main className="flex min-h-screen min-w-0 flex-1 flex-col overflow-auto pb-16 md:pb-0">
+      <main className="flex min-h-screen min-w-0 flex-1 flex-col overflow-auto bg-muted pb-16 md:pb-0">
         {children}
       </main>
       <AppBottomTabs />

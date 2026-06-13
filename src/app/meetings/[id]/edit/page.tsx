@@ -9,7 +9,6 @@ import { ArrowLeft, FileAudio, FileText, Loader2, Mic } from "lucide-react";
 import { meetingsApi } from "@/lib/api/meetings";
 import { AppPageBackground } from "@/components/layout/app-page-background";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { PublishStatus } from "@/components/meetings/publish-status";
@@ -58,21 +57,13 @@ export default function EditMeetingPage() {
     },
   });
 
-  const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [savedMessage, setSavedMessage] = useState<string | null>(null);
-  const [syncedTitle, setSyncedTitle] = useState<string | undefined>(undefined);
   const [syncedContent, setSyncedContent] = useState<string | undefined>(
     undefined,
   );
 
   if (meeting) {
-    const meetingTitle = meeting.title ?? "";
-    if (syncedTitle !== meetingTitle) {
-      setSyncedTitle(meetingTitle);
-      setTitle(meetingTitle);
-    }
-
     const meetingContent = meeting.file?.content;
     if (meetingContent != null && syncedContent !== meetingContent) {
       setSyncedContent(meetingContent);
@@ -87,7 +78,7 @@ export default function EditMeetingPage() {
   }, [meeting?.status, meeting?.sections.length, meetingId, router]);
 
   const updateMutation = useMutation({
-    mutationFn: (data: { title?: string; content?: string }) =>
+    mutationFn: (data: { content: string }) =>
       meetingsApi.updateMeeting(meetingId, data),
     onSuccess: (updated) => {
       queryClient.setQueryData(["meetings", meetingId], updated);
@@ -141,18 +132,11 @@ export default function EditMeetingPage() {
   return (
     <EditMeetingContent
       meeting={meeting}
-      title={title}
       content={content}
       savedMessage={savedMessage}
-      onTitleChange={setTitle}
       onContentChange={setContent}
       onBack={() => router.push("/meetings")}
-      onSaveTitle={() => {
-        if (title.trim()) {
-          updateMutation.mutate({ title: title.trim() });
-        }
-      }}
-      onSaveContent={() => updateMutation.mutate({ content })}
+      onSaveDraft={() => updateMutation.mutate({ content })}
       onGenerate={() => generateMutation.mutate()}
       isSaving={updateMutation.isPending}
       isGenerating={generateMutation.isPending || meeting.status === "generating"}
@@ -162,27 +146,21 @@ export default function EditMeetingPage() {
 
 function EditMeetingContent({
   meeting,
-  title,
   content,
   savedMessage,
-  onTitleChange,
   onContentChange,
   onBack,
-  onSaveTitle,
-  onSaveContent,
+  onSaveDraft,
   onGenerate,
   isSaving,
   isGenerating,
 }: {
   meeting: Meeting;
-  title: string;
   content: string;
   savedMessage: string | null;
-  onTitleChange: (value: string) => void;
   onContentChange: (value: string) => void;
   onBack: () => void;
-  onSaveTitle: () => void;
-  onSaveContent: () => void;
+  onSaveDraft: () => void;
   onGenerate: () => void;
   isSaving: boolean;
   isGenerating: boolean;
@@ -208,6 +186,9 @@ function EditMeetingContent({
     (meeting.status === "ready" || meeting.status === "failed") &&
     content.trim().length > 0 &&
     meeting.sections.length === 0;
+
+  const showContentEditor =
+    meeting.status === "ready" || meeting.status === "failed";
 
   return (
     <AppPageBackground variant="edit">
@@ -235,36 +216,6 @@ function EditMeetingContent({
         </div>
 
         <div className="space-y-6">
-          <form
-            onSubmit={(event) => {
-              event.preventDefault();
-              onSaveTitle();
-            }}
-            className="space-y-4"
-          >
-            <div className="space-y-2">
-              <Label htmlFor="title">{t("meetingTitle")}</Label>
-              <Input
-                id="title"
-                value={title}
-                onChange={(event) => onTitleChange(event.target.value)}
-                placeholder={t("titlePlaceholder")}
-                required
-                className={landingFieldClassName}
-              />
-            </div>
-            <div className="flex items-center gap-3">
-              <Button type="submit" variant="landing" disabled={isSaving}>
-                {isSaving ? tc("saving") : t("saveTitle")}
-              </Button>
-              {savedMessage && (
-                <span className="text-sm text-foreground/70" role="status">
-                  {savedMessage}
-                </span>
-              )}
-            </div>
-          </form>
-
           <div className="space-y-3 rounded-2xl bg-foreground/[0.04] p-4">
             <div className="flex items-center gap-2 text-sm font-medium">
               <SourceIcon className="size-4 text-foreground/60" aria-hidden />
@@ -308,7 +259,7 @@ function EditMeetingContent({
             <div
               className={cn(
                 landingSurfaceClassName,
-                "flex items-center gap-3 border-l-4 border-brand-lilac px-4 py-3 text-sm text-foreground/70",
+                "flex items-center gap-3 border-l-4 border-foreground/15 px-4 py-3 text-sm text-foreground/70",
               )}
               role="status"
             >
@@ -321,7 +272,7 @@ function EditMeetingContent({
             <div
               className={cn(
                 landingSurfaceClassName,
-                "flex items-center gap-3 border-l-4 border-brand-lilac px-4 py-3 text-sm text-foreground/70",
+                "flex items-center gap-3 border-l-4 border-foreground/15 px-4 py-3 text-sm text-foreground/70",
               )}
               role="status"
             >
@@ -336,14 +287,8 @@ function EditMeetingContent({
             </p>
           )}
 
-          {(meeting.status === "ready" || meeting.status === "failed") && (
-            <form
-              onSubmit={(event) => {
-                event.preventDefault();
-                onSaveContent();
-              }}
-              className="space-y-4"
-            >
+          {showContentEditor && (
+            <div className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="content">{t("meetingContent")}</Label>
                 <Textarea
@@ -355,14 +300,20 @@ function EditMeetingContent({
                   className={landingFieldClassName}
                 />
               </div>
-              <div className="flex flex-wrap items-center gap-3">
+              <div className="flex flex-wrap items-center justify-end gap-3">
+                {savedMessage && (
+                  <span className="text-sm text-foreground/70" role="status">
+                    {savedMessage}
+                  </span>
+                )}
                 <Button
-                  type="submit"
+                  type="button"
                   variant="landing"
                   className={landingButtonSecondaryClassName}
                   disabled={isSaving}
+                  onClick={onSaveDraft}
                 >
-                  {isSaving ? tc("saving") : t("saveContent")}
+                  {isSaving ? tc("saving") : t("saveDraftMeeting")}
                 </Button>
                 {canGenerate && (
                   <Button
@@ -383,7 +334,7 @@ function EditMeetingContent({
                   </Button>
                 )}
               </div>
-            </form>
+            </div>
           )}
         </div>
       </div>

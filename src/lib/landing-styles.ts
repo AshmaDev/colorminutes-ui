@@ -11,15 +11,17 @@ export const landingFieldClassName =
   "rounded-2xl border-0 bg-foreground/[0.04] shadow-inner shadow-black/[0.03] focus-visible:border-0 focus-visible:bg-white focus-visible:ring-2 focus-visible:ring-brand-sky/40";
 
 export const landingButtonSecondaryClassName =
-  "rounded-2xl border-0 bg-brand-peach/80 shadow-sm shadow-brand-peach/30 hover:bg-brand-peach hover:shadow-md hover:shadow-brand-peach/35 focus-visible:ring-brand-peach/50 active:translate-y-0";
+  "border border-foreground/15 bg-white/70 text-foreground shadow-none hover:border-foreground/25 hover:bg-white focus-visible:ring-foreground/20 active:translate-y-0";
+
+export const appPageBackgroundClassName = "bg-muted";
 
 export const appPageBackgrounds = {
-  list: "bg-brand-sky/30",
-  new: "bg-brand-peach/25",
-  editor: "bg-brand-lilac/20",
-  edit: "bg-brand-yellow/30",
-  preview: "bg-brand-pink/25",
-  profile: "bg-brand-sage/30",
+  list: appPageBackgroundClassName,
+  new: appPageBackgroundClassName,
+  editor: appPageBackgroundClassName,
+  edit: appPageBackgroundClassName,
+  preview: appPageBackgroundClassName,
+  profile: appPageBackgroundClassName,
 } as const;
 
 export type AppPageBackground = keyof typeof appPageBackgrounds;

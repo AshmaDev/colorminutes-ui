@@ -8,10 +8,20 @@ import { useTranslations } from "next-intl";
 import { ArrowLeft, Plus, Trash2 } from "lucide-react";
 import { meetingsApi, type SectionInput } from "@/lib/api/meetings";
 import { AppPageBackground } from "@/components/layout/app-page-background";
+import { UndoRemoveBanner } from "@/components/meetings/undo-remove-banner";
 import { PublishDialog } from "@/components/meetings/publish-dialog";
 import { PublishStatus } from "@/components/meetings/publish-status";
-import { RichTextEditor } from "@/components/meetings/rich-text-editor";
+import {
+  SectionParagraphEditor,
+  type EditableParagraph,
+} from "@/components/meetings/section-paragraph-editor";
 import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import type { MeetingSection } from "@/lib/schemas";
@@ -23,16 +33,42 @@ import {
   landingSurfaceClassName,
 } from "@/lib/landing-styles";
 import { sectionColorAtIndex, sectionColorBarClass } from "@/lib/section-colors";
+import { isMeetingPublished } from "@/lib/meeting-publish";
+import { usePendingUndo } from "@/lib/use-pending-undo";
 import { cn } from "@/lib/utils";
+
+type PendingSectionUndo = {
+  type: "section";
+  section: EditableSection;
+  index: number;
+};
+
+type PendingParagraphUndo = {
+  type: "paragraph";
+  sectionIndex: number;
+  paragraph: EditableParagraph;
+  index: number;
+};
+
+type PendingUndo = PendingSectionUndo | PendingParagraphUndo;
 
 type EditableSection = {
   clientId: string;
   id?: string;
   header: string;
-  content: string;
   sortOrder: number;
   color: MeetingSection["color"];
+  paragraphs: EditableParagraph[];
 };
+
+function createEmptyParagraph(sortOrder: number): EditableParagraph {
+  return {
+    clientId: crypto.randomUUID(),
+    content: "",
+    sortOrder,
+    variant: "normal",
+  };
+}
 
 function toEditableSections(sections: MeetingSection[]): EditableSection[] {
   return sections
@@ -42,10 +78,36 @@ function toEditableSections(sections: MeetingSection[]): EditableSection[] {
       clientId: section.id,
       id: section.id,
       header: section.header,
-      content: section.content,
       sortOrder: section.sortOrder,
       color: section.color,
+      paragraphs: [...section.paragraphs]
+        .sort((a, b) => a.sortOrder - b.sortOrder)
+        .map((paragraph) => ({
+          clientId: paragraph.id,
+          id: paragraph.id,
+          content: paragraph.content,
+          sortOrder: paragraph.sortOrder,
+          variant: paragraph.variant,
+        })),
     }));
+}
+
+function buildEditorSnapshot(title: string, sections: EditableSection[]): string {
+  return JSON.stringify({
+    title: title.trim(),
+    sections: sections.map((section, index) => ({
+      id: section.id,
+      header: section.header.trim(),
+      sortOrder: index,
+      color: section.color,
+      paragraphs: section.paragraphs.map((paragraph, paragraphIndex) => ({
+        id: paragraph.id,
+        content: paragraph.content,
+        sortOrder: paragraphIndex,
+        variant: paragraph.variant,
+      })),
+    })),
+  });
 }
 
 export default function MeetingMinutesPage() {
@@ -63,15 +125,20 @@ export default function MeetingMinutesPage() {
 
   const [title, setTitle] = useState("");
   const [sections, setSections] = useState<EditableSection[]>([]);
-  const [savedMessage, setSavedMessage] = useState<string | null>(null);
+  const [lastSavedSnapshot, setLastSavedSnapshot] = useState<string | null>(null);
   const [publishOpen, setPublishOpen] = useState(false);
   const [publishedUrl, setPublishedUrl] = useState<string | null>(null);
   const [syncedMeetingId, setSyncedMeetingId] = useState<string | null>(null);
+  const { pending: pendingUndo, pushPending, revertPending } =
+    usePendingUndo<PendingUndo>();
 
   if (meeting && meeting.id !== syncedMeetingId) {
+    const meetingTitle = meeting.title ?? "";
+    const editableSections = toEditableSections(meeting.sections);
     setSyncedMeetingId(meeting.id);
-    setTitle(meeting.title ?? "");
-    setSections(toEditableSections(meeting.sections));
+    setTitle(meetingTitle);
+    setSections(editableSections);
+    setLastSavedSnapshot(buildEditorSnapshot(meetingTitle, editableSections));
   }
 
   useEffect(() => {
@@ -86,10 +153,12 @@ export default function MeetingMinutesPage() {
     onSuccess: (updated) => {
       queryClient.setQueryData(["meetings", meetingId], updated);
       queryClient.invalidateQueries({ queryKey: ["meetings"] });
+      const meetingTitle = updated.title ?? "";
+      const editableSections = toEditableSections(updated.sections);
       setSyncedMeetingId(updated.id);
-      setSections(toEditableSections(updated.sections));
-      setSavedMessage(tc("saved"));
-      setTimeout(() => setSavedMessage(null), 2000);
+      setTitle(meetingTitle);
+      setSections(editableSections);
+      setLastSavedSnapshot(buildEditorSnapshot(meetingTitle, editableSections));
     },
   });
 
@@ -109,28 +178,107 @@ export default function MeetingMinutesPage() {
       {
         clientId: crypto.randomUUID(),
         header: "",
-        content: "",
         sortOrder: current.length,
         color: sectionColorAtIndex(current.length),
+        paragraphs: [createEmptyParagraph(0)],
       },
     ]);
   };
 
   const removeSection = (index: number) => {
-    setSections((current) => {
-      if (current.length <= 1) return current;
-      return current.filter((_, i) => i !== index);
-    });
+    if (sections.length <= 1) return;
+    const removed = sections[index];
+    if (!removed) return;
+    pushPending({ type: "section", section: removed, index });
+    setSections((current) => current.filter((_, i) => i !== index));
   };
 
   const updateSection = (
     index: number,
-    patch: Partial<Pick<EditableSection, "header" | "content">>,
+    patch: Partial<Pick<EditableSection, "header">>,
   ) => {
     setSections((current) => {
       const next = [...current];
       next[index] = { ...next[index]!, ...patch };
       return next;
+    });
+  };
+
+  const updateParagraph = (
+    sectionIndex: number,
+    paragraphIndex: number,
+    patch: Partial<Pick<EditableParagraph, "content" | "variant">>,
+  ) => {
+    setSections((current) => {
+      const next = [...current];
+      const section = next[sectionIndex];
+      if (!section) return current;
+      const paragraphs = [...section.paragraphs];
+      paragraphs[paragraphIndex] = { ...paragraphs[paragraphIndex]!, ...patch };
+      next[sectionIndex] = { ...section, paragraphs };
+      return next;
+    });
+  };
+
+  const addParagraph = (sectionIndex: number) => {
+    setSections((current) => {
+      const next = [...current];
+      const section = next[sectionIndex];
+      if (!section) return current;
+      next[sectionIndex] = {
+        ...section,
+        paragraphs: [
+          ...section.paragraphs,
+          createEmptyParagraph(section.paragraphs.length),
+        ],
+      };
+      return next;
+    });
+  };
+
+  const removeParagraph = (sectionIndex: number, paragraphIndex: number) => {
+    const section = sections[sectionIndex];
+    if (!section || section.paragraphs.length <= 1) return;
+    const removed = section.paragraphs[paragraphIndex];
+    if (!removed) return;
+    pushPending({
+      type: "paragraph",
+      sectionIndex,
+      paragraph: removed,
+      index: paragraphIndex,
+    });
+    setSections((current) => {
+      const next = [...current];
+      const target = next[sectionIndex];
+      if (!target) return current;
+      next[sectionIndex] = {
+        ...target,
+        paragraphs: target.paragraphs.filter((_, i) => i !== paragraphIndex),
+      };
+      return next;
+    });
+  };
+
+  const handleUndoRemove = () => {
+    revertPending((item) => {
+      if (item.type === "section") {
+        setSections((current) => {
+          const next = [...current];
+          next.splice(item.index, 0, item.section);
+          return next;
+        });
+        return;
+      }
+
+      setSections((current) => {
+        const next = [...current];
+        const section = next[item.sectionIndex];
+        if (!section) return current;
+        const paragraphs = [...section.paragraphs];
+        paragraphs.splice(item.index, 0, item.paragraph);
+        next[item.sectionIndex] = { ...section, paragraphs };
+        return next;
+      });
     });
   };
 
@@ -168,18 +316,27 @@ export default function MeetingMinutesPage() {
   }
 
   const handleSave = () => {
-    if (!title.trim()) return;
     saveMutation.mutate({
-      title: title.trim(),
+      title: title.trim() || t("untitled"),
       sections: sections.map((section, index) => ({
         id: section.id,
         header: section.header.trim() || t("defaultSectionHeader"),
-        content: section.content,
         sortOrder: index,
         color: section.color,
+        paragraphs: section.paragraphs.map((paragraph, paragraphIndex) => ({
+          id: paragraph.id,
+          content: paragraph.content,
+          sortOrder: paragraphIndex,
+          variant: paragraph.variant,
+        })),
       })),
     });
   };
+
+  const isDirty =
+    lastSavedSnapshot !== null &&
+    buildEditorSnapshot(title, sections) !== lastSavedSnapshot;
+  const showPublish = meeting ? !isMeetingPublished(meeting) : false;
 
   return (
     <>
@@ -194,38 +351,38 @@ export default function MeetingMinutesPage() {
             {t("backToMeetings")}
           </Link>
           <div className="flex flex-wrap items-center gap-2 sm:justify-end">
-            {savedMessage && (
-              <span className="text-sm text-foreground/70" role="status">
-                {savedMessage}
-              </span>
+            {isDirty ? (
+              <Button
+                type="button"
+                variant="landing"
+                className={landingButtonSecondaryClassName}
+                disabled={saveMutation.isPending}
+                onClick={handleSave}
+              >
+                {saveMutation.isPending ? tc("saving") : tc("save")}
+              </Button>
+            ) : (
+              <Button
+                type="button"
+                variant="landing"
+                className={landingButtonSecondaryClassName}
+                render={<Link href={`/meetings/${meetingId}/preview`} />}
+              >
+                {t("preview")}
+              </Button>
             )}
-            <Button
-              type="button"
-              variant="landing"
-              disabled={saveMutation.isPending}
-              onClick={handleSave}
-            >
-              {saveMutation.isPending ? tc("saving") : t("saveAll")}
-            </Button>
-            <Button
-              type="button"
-              variant="landing"
-              className={landingButtonSecondaryClassName}
-              render={<Link href={`/meetings/${meetingId}/preview`} />}
-            >
-              {t("preview")}
-            </Button>
-            <Button
-              type="button"
-              variant="landing"
-              className={landingButtonSecondaryClassName}
-              onClick={() => {
-                setPublishedUrl(null);
-                setPublishOpen(true);
-              }}
-            >
-              {t("publish")}
-            </Button>
+            {showPublish && (
+              <Button
+                type="button"
+                variant="landing"
+                onClick={() => {
+                  setPublishedUrl(null);
+                  setPublishOpen(true);
+                }}
+              >
+                {t("publish")}
+              </Button>
+            )}
           </div>
         </div>
 
@@ -269,18 +426,32 @@ export default function MeetingMinutesPage() {
                     {t("sectionLabel", { number: index + 1 })}
                   </p>
                 </div>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  className="gap-1.5 text-foreground/60 hover:text-destructive"
-                  disabled={sections.length <= 1}
-                  onClick={() => removeSection(index)}
-                  aria-label={t("removeSection")}
-                >
-                  <Trash2 className="size-4" aria-hidden />
-                  {t("removeSection")}
-                </Button>
+                {sections.length > 1 && (
+                  <DropdownMenu>
+                    <DropdownMenuTrigger
+                      render={
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          className="size-8 p-0 text-foreground/60 hover:text-destructive"
+                          aria-label={t("deleteSection")}
+                        />
+                      }
+                    >
+                      <Trash2 className="size-4" aria-hidden />
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      <DropdownMenuItem
+                        variant="destructive"
+                        onClick={() => removeSection(index)}
+                      >
+                        <Trash2 className="size-4" aria-hidden />
+                        {t("deleteSection")}
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                )}
               </div>
               <div className="space-y-4">
                 <div className="space-y-2">
@@ -297,13 +468,30 @@ export default function MeetingMinutesPage() {
                     className={landingFieldClassName}
                   />
                 </div>
-                <div className="space-y-2">
-                  <Label>{t("sectionContent")}</Label>
-                  <RichTextEditor
-                    value={section.content}
-                    onChange={(html) => updateSection(index, { content: html })}
-                    placeholder={t("sectionContentPlaceholder")}
-                  />
+                <div className="space-y-3">
+                  <Label>{t("sectionParagraphs")}</Label>
+                  {section.paragraphs.map((paragraph, paragraphIndex) => (
+                    <SectionParagraphEditor
+                      key={paragraph.clientId}
+                      paragraph={paragraph}
+                      index={paragraphIndex}
+                      canRemove={section.paragraphs.length > 1}
+                      onChange={(patch) =>
+                        updateParagraph(index, paragraphIndex, patch)
+                      }
+                      onRemove={() => removeParagraph(index, paragraphIndex)}
+                    />
+                  ))}
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    className="gap-2 text-foreground/70"
+                    onClick={() => addParagraph(index)}
+                  >
+                    <Plus className="size-4" aria-hidden />
+                    {t("addParagraph")}
+                  </Button>
                 </div>
               </div>
             </div>
@@ -331,6 +519,18 @@ export default function MeetingMinutesPage() {
         isPublishing={publishMutation.isPending}
         publishedUrl={publishedUrl}
       />
+
+      {pendingUndo && (
+        <UndoRemoveBanner
+          message={
+            pendingUndo.type === "section"
+              ? t("sectionRemoved")
+              : t("paragraphRemoved")
+          }
+          undoLabel={t("undoRemove")}
+          onUndo={handleUndoRemove}
+        />
+      )}
     </>
   );
 }

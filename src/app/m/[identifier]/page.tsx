@@ -5,7 +5,9 @@ import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
 import { MeetingMinutesView } from "@/components/meetings/meeting-minutes-view";
 import { publicMeetingSchema } from "@/lib/schemas";
+import { appPageBackgroundClassName } from "@/lib/landing-styles";
 import { getApiUrl } from "@/lib/api/token";
+import { cn } from "@/lib/utils";
 
 type PageProps = {
   params: Promise<{ identifier: string }>;
@@ -60,7 +62,7 @@ export default async function PublicMeetingPage({ params }: PageProps) {
   });
 
   return (
-    <div className="flex min-h-screen flex-col bg-background">
+    <div className={cn("flex min-h-screen flex-col", appPageBackgroundClassName)}>
       <SiteHeader />
       <main className="mx-auto w-full max-w-6xl flex-1 px-6 py-16 sm:py-20">
         <MeetingMinutesView

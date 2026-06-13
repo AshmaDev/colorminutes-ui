@@ -12,7 +12,6 @@ import { Button } from "@/components/ui/button";
 import {
   appBackLinkClassName,
   appPageMainClassName,
-  landingSurfaceClassName,
 } from "@/lib/landing-styles";
 import { cn } from "@/lib/utils";
 
@@ -74,18 +73,16 @@ export default function MeetingPreviewPage() {
             {t("previewBadge")}
           </span>
         </div>
-        <div className={cn(landingSurfaceClassName, "p-6 sm:p-10")}>
-          <MeetingMinutesView
-            title={meeting.title}
-            sections={meeting.sections}
-            untitledLabel={t("untitled")}
-            createdAtLabel={t("createdOn", {
-              date: new Date(meeting.createdAt).toLocaleDateString(undefined, {
-                dateStyle: "long",
-              }),
-            })}
-          />
-        </div>
+        <MeetingMinutesView
+          title={meeting.title}
+          sections={meeting.sections}
+          untitledLabel={t("untitled")}
+          createdAtLabel={t("createdOn", {
+            date: new Date(meeting.createdAt).toLocaleDateString(undefined, {
+              dateStyle: "long",
+            }),
+          })}
+        />
       </main>
     </AppPageBackground>
   );

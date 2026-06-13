@@ -21,11 +21,8 @@ const sourceIcons = {
   notes: FileText,
 } as const;
 
-const sourceIconColors = {
-  record: "bg-brand-sky/30 text-foreground",
-  upload: "bg-brand-peach/30 text-foreground",
-  notes: "bg-brand-lilac/30 text-foreground",
-} as const;
+const sourceIconClassName =
+  "bg-foreground/[0.06] text-foreground/70";
 
 const statusStyles = {
   draft: "text-foreground/60",
@@ -122,7 +119,7 @@ function MeetingRow({
         <span
           className={cn(
             "flex size-10 shrink-0 items-center justify-center rounded-full",
-            sourceIconColors[meeting.sourceType],
+            sourceIconClassName,
           )}
         >
           <Icon className="size-4" aria-hidden />

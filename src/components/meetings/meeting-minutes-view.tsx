@@ -1,8 +1,9 @@
 "use client";
 
-import DOMPurify from "dompurify";
 import { useTranslations } from "next-intl";
 import type { MeetingSection } from "@/lib/schemas";
+import { SectionParagraphView } from "@/components/meetings/section-paragraph-view";
+import { landingSurfaceClassName } from "@/lib/landing-styles";
 import { sectionColorBarClass } from "@/lib/section-colors";
 import { cn } from "@/lib/utils";
 
@@ -27,7 +28,8 @@ export function MeetingMinutesView({
   const sorted = [...sections].sort((a, b) => a.sortOrder - b.sortOrder);
 
   return (
-    <div className="mx-auto flex w-full max-w-6xl flex-col gap-12 lg:flex-row lg:gap-16">
+    <div className={cn(landingSurfaceClassName, "p-6 sm:p-10")}>
+      <div className="mx-auto flex w-full max-w-6xl flex-col gap-12 lg:flex-row lg:gap-16">
       <aside className="hidden shrink-0 lg:block lg:w-52 xl:w-56">
         <nav
           aria-label={t("tableOfContents")}
@@ -59,32 +61,40 @@ export function MeetingMinutesView({
         </header>
 
         <div className="space-y-20">
-          {sorted.map((section) => (
-            <section
-              key={section.id}
-              id={sectionAnchorId(section.id)}
-              className="scroll-mt-8 border-t border-foreground/10 pt-12 first:border-t-0 first:pt-0"
-            >
-              <div className="mb-6 flex items-center gap-3">
-                <span
-                  className={cn(
-                    "h-10 w-1 shrink-0 rounded-full",
-                    sectionColorBarClass[section.color],
-                  )}
-                  aria-hidden
-                />
-                <h2 className="font-heading text-3xl font-semibold leading-snug tracking-tight text-foreground sm:text-4xl">
-                  {section.header}
-                </h2>
-              </div>
-              <div
-                className="prose prose-lg max-w-none text-foreground/90 [&_a]:text-foreground [&_a]:underline [&_ol]:list-decimal [&_ul]:list-disc [&_ol]:pl-6 [&_ul]:pl-6 [&_p]:leading-relaxed"
-                dangerouslySetInnerHTML={{
-                  __html: DOMPurify.sanitize(section.content),
-                }}
-              />
-            </section>
-          ))}
+          {sorted.map((section) => {
+            const paragraphs = [...section.paragraphs].sort(
+              (a, b) => a.sortOrder - b.sortOrder,
+            );
+
+            return (
+              <section
+                key={section.id}
+                id={sectionAnchorId(section.id)}
+                className="scroll-mt-8 border-t border-foreground/10 pt-12 first:border-t-0 first:pt-0"
+              >
+                <div className="mb-6 flex items-center gap-3">
+                  <span
+                    className={cn(
+                      "h-10 w-1 shrink-0 rounded-full",
+                      sectionColorBarClass[section.color],
+                    )}
+                    aria-hidden
+                  />
+                  <h2 className="font-heading text-3xl font-semibold leading-snug tracking-tight text-foreground sm:text-4xl">
+                    {section.header}
+                  </h2>
+                </div>
+                <div className="space-y-4">
+                  {paragraphs.map((paragraph) => (
+                    <SectionParagraphView
+                      key={paragraph.id}
+                      paragraph={paragraph}
+                    />
+                  ))}
+                </div>
+              </section>
+            );
+          })}
         </div>
 
         {createdAtLabel && (
@@ -93,6 +103,7 @@ export function MeetingMinutesView({
           </footer>
         )}
       </article>
+      </div>
     </div>
   );
 }

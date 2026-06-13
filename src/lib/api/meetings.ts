@@ -5,6 +5,7 @@ import {
   publishMeetingResponseSchema,
   type Meeting,
   type MeetingVisibility,
+  type ParagraphVariant,
   type PublicMeeting,
   type SourceType,
 } from "@/lib/schemas";
@@ -18,12 +19,19 @@ export type UploadProgressHandler = (progress: {
   percent: number | null;
 }) => void;
 
+export type SectionParagraphInput = {
+  id?: string;
+  content: string;
+  sortOrder: number;
+  variant?: ParagraphVariant;
+};
+
 export type SectionInput = {
   id?: string;
   header: string;
-  content: string;
   sortOrder: number;
   color?: "peach" | "pink" | "lilac" | "sage";
+  paragraphs: SectionParagraphInput[];
 };
 
 export const meetingsApi = {
