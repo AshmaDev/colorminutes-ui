@@ -6,10 +6,7 @@ import { useTranslations } from "next-intl";
 import { CalendarDays, ChevronLeft, ChevronRight, Plus, Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { SidebarSpaceSelector } from "@/components/layout/sidebar-space-selector";
-import {
-  sidebarFooterControlClassName,
-  SidebarUserBlock,
-} from "@/components/layout/sidebar-user-block";
+import { SidebarUserBlock } from "@/components/layout/sidebar-user-block";
 import { useSidebar } from "@/components/layout/sidebar-provider";
 import { isMeetingsActive, isNewMeetingActive, isSpaceSettingsActive } from "@/lib/app-nav";
 import { cn } from "@/lib/utils";
@@ -97,9 +94,10 @@ export function AppSidebar() {
           type="button"
           onClick={toggleCollapsed}
           className={cn(
-            sidebarFooterControlClassName,
-            "mt-auto mb-4 py-2",
-            collapsed ? "justify-center" : "justify-start gap-2 px-3",
+            "mt-auto flex items-center rounded-lg text-sm font-medium transition-colors",
+            collapsed
+              ? "size-9 justify-center"
+              : "gap-2 px-3 py-2",
             "text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground",
           )}
           aria-label={collapsed ? t("expandSidebar") : t("collapseSidebar")}

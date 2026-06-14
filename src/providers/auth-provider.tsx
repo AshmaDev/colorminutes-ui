@@ -157,10 +157,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     persistSpaceId(nextSpace.id);
   }, []);
 
-  const switchSpace = useCallback((nextSpace: Space) => {
-    setSpace(nextSpace);
-    persistSpaceId(nextSpace.id);
-  }, []);
+  const switchSpace = useCallback(
+    (nextSpace: Space) => {
+      setSpace(nextSpace);
+      persistSpaceId(nextSpace.id);
+      router.push("/meetings");
+    },
+    [router],
+  );
 
   const value = useMemo(
     () => ({
