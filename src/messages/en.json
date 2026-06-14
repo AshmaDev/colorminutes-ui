@@ -154,6 +154,7 @@
   },
   "sidebar": {
     "newMeeting": "New meeting",
+    "newSpace": "New space",
     "spaceSettings": "Space settings",
     "spaceMenu": "Space menu",
     "freeDemo": "Free demo",
@@ -396,6 +397,13 @@
     "spacePassword": "Space password",
     "visibilityLabel": "Space visibility",
     "currentSpace": "{name}",
+    "createSpace": {
+      "title": "Create a space",
+      "description": "Spaces keep meetings and settings separate for each team or project.",
+      "submit": "Create space",
+      "creating": "Creating…",
+      "cancel": "Cancel"
+    },
     "viewSpacePage": "View space page",
     "pageTitle": "{name}",
     "pageDescription": "Published meeting minutes in this space.",

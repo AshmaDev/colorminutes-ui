@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { UploadProgress } from "@/components/meetings/upload-progress";
 import { landingButtonSecondaryClassName } from "@/lib/landing-styles";
 import { cn } from "@/lib/utils";
+import { useAuth } from "@/providers/auth-provider";
 
 const MAX_RECORDING_SECONDS = 3600;
 
@@ -29,6 +30,7 @@ export function RecordingPanel() {
   const t = useTranslations("recording");
   const tc = useTranslations("common");
   const router = useRouter();
+  const { space } = useAuth();
   const [state, setState] = useState<RecordingState>("idle");
   const [elapsed, setElapsed] = useState(0);
   const [error, setError] = useState<string | null>(null);
@@ -75,6 +77,7 @@ export function RecordingPanel() {
       return meetingsApi.create({
         file: new File([blob], fileName, { type: blob.type || "audio/webm" }),
         sourceType: "record",
+        spaceId: space?.id,
         signal: abortRef.current.signal,
         onUploadProgress: setUploadProgress,
       });

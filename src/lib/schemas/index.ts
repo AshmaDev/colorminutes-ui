@@ -143,6 +143,8 @@ export const registerSpaceInputSchema = z
     path: ["password"],
   });
 
+export const createSpaceInputSchema = registerSpaceInputSchema;
+
 export const loginInputSchema = z.object({
   email: z.string().email(),
   password: z.string().min(1),
@@ -223,6 +225,7 @@ export const errorResponseSchema = z.object({
 export type User = z.infer<typeof userSchema>;
 export type Space = z.infer<typeof spaceSchema>;
 export type SpaceVisibility = z.infer<typeof spaceVisibilitySchema>;
+export type CreateSpaceInput = z.infer<typeof createSpaceInputSchema>;
 export type Meeting = z.infer<typeof meetingSchema>;
 export type PublicMeeting = z.infer<typeof publicMeetingSchema>;
 export type PublicSpace = z.infer<typeof publicSpaceSchema>;

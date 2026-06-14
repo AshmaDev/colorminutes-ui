@@ -10,8 +10,39 @@ import {
 } from "react";
 import { useRouter } from "next/navigation";
 import { authApi } from "@/lib/api/auth";
+import { spacesApi } from "@/lib/api/spaces";
 import { clearToken, getToken } from "@/lib/api/token";
 import type { Space, User } from "@/lib/schemas";
+
+const ACTIVE_SPACE_KEY = "colorminutes-active-space-id";
+
+function getPersistedSpaceId(): string | null {
+  if (typeof window === "undefined") return null;
+  return localStorage.getItem(ACTIVE_SPACE_KEY);
+}
+
+function persistSpaceId(id: string) {
+  localStorage.setItem(ACTIVE_SPACE_KEY, id);
+}
+
+function clearPersistedSpaceId() {
+  localStorage.removeItem(ACTIVE_SPACE_KEY);
+}
+
+function resolveActiveSpace(
+  spaces: Space[],
+  fallbackSpace: Space | null
+): Space | null {
+  const persistedId = getPersistedSpaceId();
+  if (persistedId) {
+    const persisted = spaces.find((space) => space.id === persistedId);
+    if (persisted) return persisted;
+  }
+  if (fallbackSpace && spaces.some((space) => space.id === fallbackSpace.id)) {
+    return fallbackSpace;
+  }
+  return spaces[0] ?? null;
+}
 
 type AuthContextValue = {
   user: User | null;
@@ -31,6 +62,7 @@ type AuthContextValue = {
   logout: () => void;
   refreshUser: () => Promise<void>;
   setSpace: (space: Space) => void;
+  switchSpace: (space: Space) => void;
 };
 
 const AuthContext = createContext<AuthContextValue | null>(null);
@@ -50,10 +82,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
     try {
       const me = await authApi.me();
+      const spaces = await spacesApi.list();
+      const activeSpace = resolveActiveSpace(spaces, me.space);
       setUser(me.user);
-      setSpace(me.space);
+      setSpace(activeSpace);
+      if (activeSpace) {
+        persistSpaceId(activeSpace.id);
+      }
     } catch {
       clearToken();
+      clearPersistedSpaceId();
       setUser(null);
       setSpace(null);
     }
@@ -76,8 +114,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const login = useCallback(
     async (input: { email: string; password: string }) => {
       const data = await authApi.login(input);
+      const spaces = await spacesApi.list();
+      const activeSpace = resolveActiveSpace(spaces, data.space);
       setUser(data.user);
-      setSpace(data.space);
+      setSpace(activeSpace);
+      if (activeSpace) {
+        persistSpaceId(activeSpace.id);
+      }
     },
     []
   );
@@ -95,12 +138,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const data = await authApi.register(input);
       setUser(data.user);
       setSpace(data.space);
+      persistSpaceId(data.space.id);
     },
     []
   );
 
   const logout = useCallback(() => {
     clearToken();
+    clearPersistedSpaceId();
     setUser(null);
     setSpace(null);
     router.push("/");
@@ -109,6 +154,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const setSpaceState = useCallback((nextSpace: Space) => {
     setSpace(nextSpace);
+    persistSpaceId(nextSpace.id);
+  }, []);
+
+  const switchSpace = useCallback((nextSpace: Space) => {
+    setSpace(nextSpace);
+    persistSpaceId(nextSpace.id);
   }, []);
 
   const value = useMemo(
@@ -122,8 +173,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       logout,
       refreshUser,
       setSpace: setSpaceState,
+      switchSpace,
     }),
-    [user, space, isLoading, login, register, logout, refreshUser, setSpaceState]
+    [
+      user,
+      space,
+      isLoading,
+      login,
+      register,
+      logout,
+      refreshUser,
+      setSpaceState,
+      switchSpace,
+    ]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

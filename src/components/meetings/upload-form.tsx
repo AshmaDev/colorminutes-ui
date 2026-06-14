@@ -18,6 +18,7 @@ import {
   landingSurfaceClassName,
 } from "@/lib/landing-styles";
 import { cn } from "@/lib/utils";
+import { useAuth } from "@/providers/auth-provider";
 
 type FormType = "record" | "upload" | "notes";
 
@@ -56,6 +57,7 @@ export function UploadMeetingForm() {
   const t = useTranslations("upload");
   const tc = useTranslations("common");
   const router = useRouter();
+  const { space } = useAuth();
   const abortRef = useRef<AbortController | null>(null);
   const [formType, setFormType] = useState<FormType>("upload");
   const [fileName, setFileName] = useState<string | null>(null);
@@ -80,6 +82,7 @@ export function UploadMeetingForm() {
       return meetingsApi.create({
         file,
         sourceType,
+        spaceId: space?.id,
         signal: abortRef.current.signal,
         onUploadProgress: setUploadProgress,
       });

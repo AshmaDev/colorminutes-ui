@@ -30,6 +30,28 @@ export function setStoredSpaceAccessToken(identifier: string, token: string) {
 }
 
 export const spacesApi = {
+  async list(): Promise<Space[]> {
+    try {
+      return z.array(spaceSchema).parse(await api.get("spaces/me").json());
+    } catch (error) {
+      throw new Error(await parseApiError(error));
+    }
+  },
+
+  async create(input: {
+    name: string;
+    visibility: Space["visibility"];
+    password?: string;
+  }): Promise<Space> {
+    try {
+      return spaceSchema.parse(
+        await api.post("spaces", { json: input }).json()
+      );
+    } catch (error) {
+      throw new Error(await parseApiError(error));
+    }
+  },
+
   async update(
     id: string,
     input: {

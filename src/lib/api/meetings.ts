@@ -40,9 +40,12 @@ export type SectionInput = {
 };
 
 export const meetingsApi = {
-  async list(): Promise<Meeting[]> {
+  async list(spaceId?: string): Promise<Meeting[]> {
     try {
-      return z.array(meetingSchema).parse(await api.get("meetings").json());
+      const searchParams = spaceId ? { spaceId } : undefined;
+      return z
+        .array(meetingSchema)
+        .parse(await api.get("meetings", { searchParams }).json());
     } catch (error) {
       throw new Error(await parseApiError(error));
     }
@@ -109,12 +112,14 @@ export const meetingsApi = {
     file,
     sourceType,
     title,
+    spaceId,
     onUploadProgress,
     signal,
   }: {
     file: File | Blob;
     sourceType: SourceType;
     title?: string;
+    spaceId?: string;
     onUploadProgress?: UploadProgressHandler;
     signal?: AbortSignal;
   }): Promise<Meeting> {
@@ -122,6 +127,9 @@ export const meetingsApi = {
     formData.append("sourceType", sourceType);
     if (title) {
       formData.append("title", title);
+    }
+    if (spaceId) {
+      formData.append("spaceId", spaceId);
     }
     formData.append("file", file);
 

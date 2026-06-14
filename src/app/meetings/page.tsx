@@ -13,6 +13,7 @@ import { PublishStatus } from "@/components/meetings/publish-status";
 import { landingSurfaceClassName } from "@/lib/landing-styles";
 import { cn } from "@/lib/utils";
 import type { Meeting } from "@/lib/schemas";
+import { useAuth } from "@/providers/auth-provider";
 
 type MeetingsTranslator = (key: string) => string;
 
@@ -50,9 +51,11 @@ function formatDate(iso: string): string {
 
 export default function MeetingsPage() {
   const t = useTranslations("meetings");
+  const { space } = useAuth();
   const { data: meetings, isLoading, error } = useQuery({
-    queryKey: ["meetings"],
-    queryFn: meetingsApi.list,
+    queryKey: ["meetings", space?.id],
+    queryFn: () => meetingsApi.list(space?.id),
+    enabled: !!space?.id,
   });
 
   return (
