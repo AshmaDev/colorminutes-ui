@@ -3,7 +3,7 @@
 import { useTranslations } from "next-intl";
 import type { MeetingSection } from "@/lib/schemas";
 import { SectionParagraphView } from "@/components/meetings/section-paragraph-view";
-import { landingSurfaceClassName } from "@/lib/landing-styles";
+import { glassEffectClassName } from "@/lib/landing-styles";
 import { sectionColorBarClass } from "@/lib/section-colors";
 import { cn } from "@/lib/utils";
 
@@ -28,7 +28,7 @@ export function MeetingMinutesView({
   const sorted = [...sections].sort((a, b) => a.sortOrder - b.sortOrder);
 
   return (
-    <div className={cn(landingSurfaceClassName, "p-6 sm:p-10")}>
+    <div className={cn(glassEffectClassName, "p-6 sm:p-10")}>
       <div className="mx-auto flex w-full max-w-6xl flex-col gap-12 lg:flex-row lg:gap-16">
       <aside className="hidden shrink-0 lg:block lg:w-52 xl:w-56">
         <nav
