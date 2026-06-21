@@ -3,6 +3,10 @@
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 import type { PublicSpaceMeeting } from "@/lib/schemas";
+import {
+  sectionColorAtIndex,
+  sectionColorBackgroundClass,
+} from "@/lib/section-colors";
 import { cn } from "@/lib/utils";
 
 type SpaceMeetingListProps = {
@@ -23,23 +27,31 @@ export function SpaceMeetingList({ meetings, className }: SpaceMeetingListProps)
   }
 
   return (
-    <ul className={cn("divide-y divide-foreground/10 rounded-2xl border border-foreground/10", className)}>
-      {meetings.map((meeting) => {
+    <ul className={cn("grid gap-4 sm:gap-6", className)}>
+      {meetings.map((meeting, index) => {
         const href = `/m/${meeting.slug ?? meeting.id}`;
         const title = meeting.title ?? tm("untitled");
         const date = new Date(meeting.publishedAt ?? meeting.createdAt).toLocaleDateString(
           undefined,
-          { dateStyle: "medium" }
+          { dateStyle: "medium" },
         );
+        const color = sectionColorAtIndex(index);
 
         return (
           <li key={meeting.id}>
             <Link
               href={href}
-              className="flex items-center justify-between gap-4 px-4 py-4 transition-colors hover:bg-foreground/[0.03] sm:px-6"
+              className={cn(
+                sectionColorBackgroundClass[color],
+                "group flex items-center justify-between gap-4 rounded-3xl px-6 py-5 shadow-sm ring-1 ring-foreground/10 transition-transform hover:-translate-y-0.5 hover:shadow-md sm:px-8 sm:py-6",
+              )}
             >
-              <span className="font-medium text-foreground">{title}</span>
-              <span className="shrink-0 text-sm text-foreground/60">{date}</span>
+              <span className="font-heading text-xl font-semibold text-foreground sm:text-2xl">
+                {title}
+              </span>
+              <span className="shrink-0 text-sm font-medium text-foreground/70">
+                {date}
+              </span>
             </Link>
           </li>
         );

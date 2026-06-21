@@ -6,13 +6,10 @@ import { useQuery } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
 import { ArrowLeft } from "lucide-react";
 import { meetingsApi } from "@/lib/api/meetings";
-import { AppContainer } from "@/components/layout/app-container";
 import { AppPageBackground } from "@/components/layout/app-page-background";
 import { MeetingMinutesView } from "@/components/meetings/meeting-minutes-view";
 import { Button } from "@/components/ui/button";
-import {
-  appBackLinkClassName,
-} from "@/lib/landing-styles";
+import { appBackLinkClassName } from "@/lib/landing-styles";
 import { cn } from "@/lib/utils";
 
 export default function MeetingPreviewPage() {
@@ -28,9 +25,9 @@ export default function MeetingPreviewPage() {
   if (isLoading) {
     return (
       <AppPageBackground variant="preview">
-        <AppContainer className="flex items-center justify-center text-foreground/70">
+        <div className="flex flex-1 items-center justify-center px-6 py-16 text-foreground/70">
           {t("loadingMeeting")}
-        </AppContainer>
+        </div>
       </AppPageBackground>
     );
   }
@@ -38,20 +35,20 @@ export default function MeetingPreviewPage() {
   if (error || !meeting) {
     return (
       <AppPageBackground variant="preview">
-        <AppContainer className="flex flex-col items-center justify-center gap-4">
+        <div className="flex flex-1 flex-col items-center justify-center gap-4 px-6 py-16">
           <p className="text-foreground/70">{t("notFound")}</p>
           <Button render={<Link href={`/meetings/${meetingId}`} />} variant="landing">
             {t("backToEditor")}
           </Button>
-        </AppContainer>
+        </div>
       </AppPageBackground>
     );
   }
 
   return (
-    <AppPageBackground variant="preview">
-      <AppContainer>
-        <div className="mb-8 flex items-center justify-between gap-4">
+    <AppPageBackground variant="preview" className="bg-background">
+      <div className="border-b border-foreground/10 bg-white/60 px-6 py-4">
+        <div className="mx-auto flex max-w-6xl items-center justify-between gap-4">
           <Link
             href={`/meetings/${meetingId}`}
             className={cn(appBackLinkClassName, "inline-flex items-center gap-2")}
@@ -63,17 +60,19 @@ export default function MeetingPreviewPage() {
             {t("previewBadge")}
           </span>
         </div>
-        <MeetingMinutesView
-          title={meeting.title}
-          sections={meeting.sections}
-          untitledLabel={t("untitled")}
-          createdAtLabel={t("createdOn", {
-            date: new Date(meeting.createdAt).toLocaleDateString(undefined, {
-              dateStyle: "long",
-            }),
-          })}
-        />
-      </AppContainer>
+      </div>
+      <MeetingMinutesView
+        title={meeting.title}
+        sections={meeting.sections}
+        untitledLabel={t("untitled")}
+        publishedAt={meeting.publishedAt}
+        createdAtLabel={t("createdOn", {
+          date: new Date(meeting.createdAt).toLocaleDateString(undefined, {
+            dateStyle: "long",
+          }),
+        })}
+        showPrint={false}
+      />
     </AppPageBackground>
   );
 }

@@ -7,14 +7,13 @@ import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
 import { SpaceAccessGate } from "@/components/spaces/space-access-gate";
 import { SpaceMeetingList } from "@/components/spaces/space-meeting-list";
+import { BackToTopButton } from "@/components/ui/back-to-top-button";
 import {
   getStoredSpaceAccessToken,
   setStoredSpaceAccessToken,
   spacesApi,
 } from "@/lib/api/spaces";
 import type { PublicSpace } from "@/lib/schemas";
-import { appPageBackgroundClassName } from "@/lib/landing-styles";
-import { cn } from "@/lib/utils";
 
 type PublicSpacePageClientProps = {
   identifier: string;
@@ -79,30 +78,38 @@ export function PublicSpacePageClient({ identifier }: PublicSpacePageClientProps
     }
   };
 
+  const showBackToTop = (space?.meetings.length ?? 0) > 4;
+
   return (
-    <div className={cn("flex min-h-screen flex-col", appPageBackgroundClassName)}>
-      <SiteHeader />
-      <main className="mx-auto w-full max-w-3xl flex-1 px-6 py-16 sm:py-20">
+    <div className="flex min-h-screen flex-col bg-background">
+      <SiteHeader variant="landing" />
+      <main className="flex-1">
         {isLoading && !space && !accessRequired && !membersOnly && (
-          <p className="text-sm text-foreground/70">{t("loading")}</p>
+          <div className="mx-auto max-w-3xl px-6 py-16 sm:py-20">
+            <p className="text-sm text-foreground/70">{t("loading")}</p>
+          </div>
         )}
 
         {error && !accessRequired && !membersOnly && (
-          <p className="text-sm text-destructive" role="alert">
-            {error}
-          </p>
+          <div className="mx-auto max-w-3xl px-6 py-16 sm:py-20">
+            <p className="text-sm text-destructive" role="alert">
+              {error}
+            </p>
+          </div>
         )}
 
         {accessRequired && (
-          <SpaceAccessGate
-            onSubmit={handlePasswordSubmit}
-            error={error}
-            isSubmitting={isSubmitting}
-          />
+          <div className="mx-auto max-w-md px-6 py-16 sm:py-20">
+            <SpaceAccessGate
+              onSubmit={handlePasswordSubmit}
+              error={error}
+              isSubmitting={isSubmitting}
+            />
+          </div>
         )}
 
         {membersOnly && (
-          <div className="mx-auto max-w-md space-y-4 text-center">
+          <div className="mx-auto max-w-md space-y-4 px-6 py-16 text-center sm:py-20">
             <h1 className="font-heading text-2xl font-semibold tracking-tight">
               {t("membersOnly.title")}
             </h1>
@@ -114,18 +121,33 @@ export function PublicSpacePageClient({ identifier }: PublicSpacePageClientProps
         )}
 
         {space && (
-          <div className="space-y-8">
-            <div className="space-y-2">
-              <h1 className="font-heading text-3xl font-semibold tracking-tight sm:text-4xl">
-                {space.name}
-              </h1>
-              <p className="text-sm text-foreground/70">{t("publishedMeetings")}</p>
-            </div>
-            <SpaceMeetingList meetings={space.meetings} />
-          </div>
+          <>
+            <header className="bg-brand-sky px-6 py-16 text-center sm:py-20">
+              <div className="mx-auto max-w-3xl space-y-3">
+                <h1 className="font-heading text-4xl font-semibold leading-tight tracking-tight text-foreground sm:text-5xl">
+                  {space.name}
+                </h1>
+                <p className="text-sm font-medium uppercase tracking-wider text-foreground/70">
+                  {t("publishedMeetings")}
+                </p>
+              </div>
+            </header>
+
+            <section className="px-6 py-12 sm:py-16">
+              <div className="mx-auto max-w-3xl">
+                <SpaceMeetingList meetings={space.meetings} />
+              </div>
+            </section>
+
+            {showBackToTop && (
+              <div className="no-print fixed bottom-6 right-4 z-40 sm:bottom-8 sm:right-6">
+                <BackToTopButton inline />
+              </div>
+            )}
+          </>
         )}
       </main>
-      <SiteFooter />
+      <SiteFooter variant="landing" />
     </div>
   );
 }

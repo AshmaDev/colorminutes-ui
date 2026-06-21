@@ -14,12 +14,27 @@ import {
   spacesApi,
 } from "@/lib/api/spaces";
 import type { PublicMeeting } from "@/lib/schemas";
-import { appPageBackgroundClassName } from "@/lib/landing-styles";
 import { cn } from "@/lib/utils";
 
 type PublicMeetingPageClientProps = {
   identifier: string;
 };
+
+function PublicMeetingShell({
+  children,
+  className,
+}: {
+  children: React.ReactNode;
+  className?: string;
+}) {
+  return (
+    <div className={cn("flex min-h-screen flex-col bg-background", className)}>
+      <SiteHeader variant="landing" />
+      <main className="flex-1">{children}</main>
+      <SiteFooter variant="landing" />
+    </div>
+  );
+}
 
 export function PublicMeetingPageClient({ identifier }: PublicMeetingPageClientProps) {
   const t = useTranslations("meetings");
@@ -89,71 +104,66 @@ export function PublicMeetingPageClient({ identifier }: PublicMeetingPageClientP
 
   if (isLoading && !meeting && !accessRequired && !membersOnly) {
     return (
-      <div className={cn("flex min-h-screen flex-col", appPageBackgroundClassName)}>
-        <SiteHeader />
-        <main className="mx-auto w-full max-w-6xl flex-1 px-6 py-16 sm:py-20">
+      <PublicMeetingShell>
+        <div className="mx-auto max-w-3xl px-6 py-16 sm:py-20">
           <p className="text-sm text-foreground/70">{t("loadingMeeting")}</p>
-        </main>
-        <SiteFooter />
-      </div>
+        </div>
+      </PublicMeetingShell>
     );
   }
 
   if (error && !accessRequired && !membersOnly && !meeting) {
     return (
-      <div className={cn("flex min-h-screen flex-col", appPageBackgroundClassName)}>
-        <SiteHeader />
-        <main className="mx-auto w-full max-w-6xl flex-1 px-6 py-16 sm:py-20">
+      <PublicMeetingShell>
+        <div className="mx-auto max-w-3xl px-6 py-16 sm:py-20">
           <p className="text-sm text-destructive" role="alert">
             {error}
           </p>
-        </main>
-        <SiteFooter />
-      </div>
+        </div>
+      </PublicMeetingShell>
     );
   }
 
   return (
-    <div className={cn("flex min-h-screen flex-col", appPageBackgroundClassName)}>
-      <SiteHeader />
-      <main className="mx-auto w-full max-w-6xl flex-1 px-6 py-16 sm:py-20">
-        {accessRequired && (
+    <PublicMeetingShell>
+      {accessRequired && (
+        <div className="mx-auto max-w-md px-6 py-16 sm:py-20">
           <SpaceAccessGate
             onSubmit={handlePasswordSubmit}
             error={error}
             isSubmitting={isSubmitting}
           />
-        )}
+        </div>
+      )}
 
-        {membersOnly && (
-          <div className="mx-auto max-w-md space-y-4 text-center">
-            <h1 className="font-heading text-2xl font-semibold tracking-tight">
-              {ts("membersOnly.title")}
-            </h1>
-            <p className="text-sm text-foreground/70">{ts("membersOnly.description")}</p>
-            <Link
-              href={`/login?from=${encodeURIComponent(`/m/${identifier}`)}`}
-              className="inline-flex h-10 items-center justify-center rounded-full bg-foreground px-6 text-sm font-medium text-background transition-opacity hover:opacity-90"
-            >
-              {ts("membersOnly.signIn")}
-            </Link>
-          </div>
-        )}
+      {membersOnly && (
+        <div className="mx-auto max-w-md space-y-4 px-6 py-16 text-center sm:py-20">
+          <h1 className="font-heading text-2xl font-semibold tracking-tight">
+            {ts("membersOnly.title")}
+          </h1>
+          <p className="text-sm text-foreground/70">{ts("membersOnly.description")}</p>
+          <Link
+            href={`/login?from=${encodeURIComponent(`/m/${identifier}`)}`}
+            className="inline-flex h-10 items-center justify-center rounded-full bg-foreground px-6 text-sm font-medium text-background transition-opacity hover:opacity-90"
+          >
+            {ts("membersOnly.signIn")}
+          </Link>
+        </div>
+      )}
 
-        {meeting && (
-          <MeetingMinutesView
-            title={meeting.title}
-            sections={meeting.sections}
-            untitledLabel={t("untitled")}
-            createdAtLabel={t("createdOn", {
-              date: new Date(meeting.createdAt).toLocaleDateString(undefined, {
-                dateStyle: "long",
-              }),
-            })}
-          />
-        )}
-      </main>
-      <SiteFooter />
-    </div>
+      {meeting && (
+        <MeetingMinutesView
+          title={meeting.title}
+          sections={meeting.sections}
+          untitledLabel={t("untitled")}
+          publishedAt={meeting.publishedAt}
+          createdAtLabel={t("createdOn", {
+            date: new Date(meeting.createdAt).toLocaleDateString(undefined, {
+              dateStyle: "long",
+            }),
+          })}
+        />
+      )}
+    </PublicMeetingShell>
   );
 }
