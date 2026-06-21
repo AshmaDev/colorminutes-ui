@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useTranslations } from "next-intl";
 import type { PublicSpaceMeeting } from "@/lib/schemas";
 import {
+  cmContentSectionsClassName,
   cmGradientClass,
   cmSectionBodyClassName,
   cmSectionClassName,
@@ -30,7 +31,7 @@ export function SpaceMeetingList({ meetings, className }: SpaceMeetingListProps)
   }
 
   return (
-    <ul className={cn("space-y-[18px]", className)}>
+    <ul className={cn(cmContentSectionsClassName, className)}>
       {meetings.map((meeting, index) => {
         const href = `/m/${meeting.slug ?? meeting.id}`;
         const title = meeting.title ?? tm("untitled");

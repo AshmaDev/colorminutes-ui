@@ -10,11 +10,13 @@ export const cmWrapClassName =
 export const cmHeroClassName = "cm-hero relative mt-2.5 overflow-hidden rounded-[30px] max-md:rounded-3xl";
 
 export const cmSectionClassName =
-  "cm-section mt-[18px] scroll-mt-[88px] overflow-hidden rounded-[24px] border border-white/85 bg-[rgba(255,255,255,0.92)] shadow-[0_14px_40px_rgba(26,39,68,0.12)]";
+  "cm-section scroll-mt-[88px] overflow-hidden rounded-[24px] border border-white/85 bg-[rgba(255,255,255,0.92)] shadow-[0_14px_40px_rgba(26,39,68,0.12)]";
 
-export const cmSectionHeadClassName = "px-[18px] pb-2.5 pt-[18px] max-md:px-3.5";
+export const cmContentSectionsClassName = "mt-10 flex flex-col gap-8";
 
-export const cmSectionBodyClassName = "px-[18px] pb-[18px] max-md:px-3.5";
+export const cmSectionHeadClassName = "px-[18px] pb-4 pt-[18px] max-md:px-3.5";
+
+export const cmSectionBodyClassName = "px-[18px] pb-[18px] pt-2 max-md:px-3.5";
 
 export const cmBoxClassName =
   "cm-box mt-3 rounded-[18px] border border-white/80 p-3.5 shadow-[inset_0_1px_0_rgba(255,255,255,0.5)] first:mt-0 [&+&]:mt-2.5 [&_h3]:mb-2 [&_h3]:mt-0 [&_h3]:text-base [&_li]:text-[0.97rem] [&_li]:text-[#243042] [&_p]:text-[0.97rem] [&_p]:text-[#243042] [&_ul]:mt-2 [&_ul]:list-disc [&_ul]:pl-[18px]";

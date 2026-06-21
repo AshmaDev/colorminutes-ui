@@ -13,6 +13,7 @@ import {
   cmMeetingDateClassName,
   cmMiniCardClassName,
   cmPageClassName,
+  cmContentSectionsClassName,
   cmSectionBodyClassName,
   cmSectionClassName,
   cmSectionHeadClassName,
@@ -99,6 +100,7 @@ export function MeetingMinutesView({
           )}
         </section>
 
+        <div className={cmContentSectionsClassName}>
         {sorted.map((section, index) => {
           const paragraphs = [...section.paragraphs].sort(
             (a, b) => a.sortOrder - b.sortOrder,
@@ -133,6 +135,7 @@ export function MeetingMinutesView({
             </section>
           );
         })}
+        </div>
 
         {createdAtLabel && (
           <footer className={cmFooterClassName}>{createdAtLabel}</footer>
