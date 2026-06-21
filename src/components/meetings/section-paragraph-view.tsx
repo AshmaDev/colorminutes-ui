@@ -2,11 +2,11 @@
 
 import DOMPurify from "dompurify";
 import type { SectionParagraph } from "@/lib/schemas";
-import { paragraphVariantBlockClass } from "@/lib/paragraph-variants";
+import { cmBoxClassName, cmGradientClass } from "@/lib/colorminutes-public-styles";
 import { cn } from "@/lib/utils";
 
 const proseClassName =
-  "prose prose-lg max-w-none text-foreground/90 [&_a]:text-foreground [&_a]:underline [&_ol]:list-decimal [&_ul]:list-disc [&_ol]:pl-6 [&_ul]:pl-6 [&_p]:leading-relaxed";
+  "max-w-none [&_a]:font-semibold [&_a]:text-[#1d4ed8] [&_a]:no-underline [&_ol]:list-decimal [&_ol]:pl-[18px] [&_p]:leading-relaxed [&_p]:first:mt-2 [&_strong]:font-bold [&_ul]:list-disc [&_ul]:pl-[18px]";
 
 type SectionParagraphViewProps = {
   paragraph: SectionParagraph;
@@ -14,24 +14,10 @@ type SectionParagraphViewProps = {
 
 export function SectionParagraphView({ paragraph }: SectionParagraphViewProps) {
   const sanitized = DOMPurify.sanitize(paragraph.content);
-  const isNormal = paragraph.variant === "normal";
-
-  if (isNormal) {
-    return (
-      <div
-        className={proseClassName}
-        dangerouslySetInnerHTML={{ __html: sanitized }}
-      />
-    );
-  }
 
   return (
     <div
-      className={cn(
-        paragraphVariantBlockClass[paragraph.variant],
-        proseClassName,
-        "prose-sm sm:prose-base",
-      )}
+      className={cn(cmBoxClassName, cmGradientClass(paragraph.color), proseClassName)}
       dangerouslySetInnerHTML={{ __html: sanitized }}
     />
   );

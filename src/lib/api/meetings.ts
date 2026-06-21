@@ -6,6 +6,7 @@ import {
   type Meeting,
   type ParagraphVariant,
   type PublicMeeting,
+  type SectionColor,
   type SourceType,
 } from "@/lib/schemas";
 import { z } from "zod";
@@ -29,13 +30,14 @@ export type SectionParagraphInput = {
   content: string;
   sortOrder: number;
   variant?: ParagraphVariant;
+  color?: SectionColor;
 };
 
 export type SectionInput = {
   id?: string;
   header: string;
   sortOrder: number;
-  color?: "peach" | "pink" | "lilac" | "sage";
+  color?: SectionColor;
   paragraphs: SectionParagraphInput[];
 };
 

@@ -6,7 +6,18 @@ import { FloatingSectionNav } from "@/components/meetings/floating-section-nav";
 import { PrintMinutesButton } from "@/components/meetings/print-minutes-button";
 import { SectionParagraphView } from "@/components/meetings/section-paragraph-view";
 import { BackToTopButton } from "@/components/ui/back-to-top-button";
-import { sectionColorBackgroundClass } from "@/lib/section-colors";
+import {
+  cmFooterClassName,
+  cmGradientClass,
+  cmHeroClassName,
+  cmMeetingDateClassName,
+  cmMiniCardClassName,
+  cmPageClassName,
+  cmSectionBodyClassName,
+  cmSectionClassName,
+  cmSectionHeadClassName,
+  cmWrapClassName,
+} from "@/lib/colorminutes-public-styles";
 import { cn } from "@/lib/utils";
 
 type MeetingMinutesViewProps = {
@@ -36,57 +47,82 @@ export function MeetingMinutesView({
   const dateLabel = publishedAt
     ? t("publishedOn", {
         date: new Date(publishedAt).toLocaleDateString(undefined, {
-          dateStyle: "long",
+          weekday: "short",
+          month: "2-digit",
+          day: "2-digit",
+          year: "numeric",
+          hour: "numeric",
+          minute: "2-digit",
         }),
       })
     : createdAtLabel;
 
   return (
-    <>
-      <header className="bg-brand-sky px-6 py-16 sm:py-20">
-        <div className="mx-auto max-w-3xl space-y-6 text-center">
-          <h1 className="font-heading text-4xl font-semibold leading-tight tracking-tight text-foreground sm:text-5xl">
+    <div className={cn(cmPageClassName, "cm-page flex-1")} id="top">
+      <div className={cmWrapClassName}>
+        <section className={cmHeroClassName}>
+          <h1 className="relative z-[1] m-0 text-[clamp(1.8rem,4vw,3rem)] font-bold leading-[1.1] tracking-[-0.02em] text-[#1f2937]">
             {title ?? untitledLabel}
           </h1>
+          <p className="relative z-[1] mt-2.5 max-w-[760px] text-base text-[#6b7280]">
+            {t("minutesSubtitle")}
+          </p>
           {dateLabel && (
-            <p className="text-sm font-medium uppercase tracking-wider text-foreground/70">
-              {dateLabel}
-            </p>
+            <div className={cmMeetingDateClassName}>{dateLabel}</div>
           )}
-          {sorted.length > 0 && (
-            <p className="mx-auto max-w-xl rounded-2xl bg-white/50 px-5 py-4 text-sm leading-relaxed text-foreground/80">
-              <span className="font-medium text-foreground">{t("readingTipLabel")}</span>{" "}
-              {t("readingTip")}
-            </p>
-          )}
+
+          <div className="relative z-[1] mt-[18px] grid grid-cols-1 gap-3.5 md:grid-cols-3">
+            <div className={cmMiniCardClassName}>
+              <strong className="mb-1.5 block text-[0.96rem]">
+                {t("mainFocusLabel")}
+              </strong>
+              <span className="text-[0.92rem] text-[#6b7280]">{t("mainFocus")}</span>
+            </div>
+            <div className={cmMiniCardClassName}>
+              <strong className="mb-1.5 block text-[0.96rem]">
+                {t("readingTipLabel")}
+              </strong>
+              <span className="text-[0.92rem] text-[#6b7280]">{t("readingTip")}</span>
+            </div>
+            <div className={cmMiniCardClassName}>
+              <strong className="mb-1.5 block text-[0.96rem]">
+                {t("goodFollowUpLabel")}
+              </strong>
+              <span className="text-[0.92rem] text-[#6b7280]">{t("goodFollowUp")}</span>
+            </div>
+          </div>
+
           {showPrint && (
-            <div className="pt-2">
+            <div className="relative z-[1] mt-4">
               <PrintMinutesButton />
             </div>
           )}
-        </div>
-      </header>
+        </section>
 
-      {sorted.map((section, index) => {
-        const paragraphs = [...section.paragraphs].sort(
-          (a, b) => a.sortOrder - b.sortOrder,
-        );
+        {sorted.map((section, index) => {
+          const paragraphs = [...section.paragraphs].sort(
+            (a, b) => a.sortOrder - b.sortOrder,
+          );
+          const headGradient = section.color;
 
-        return (
-          <section
-            key={section.id}
-            id={sectionAnchorId(section.id)}
-            data-meeting-section
-            className={cn(
-              sectionColorBackgroundClass[section.color],
-              "scroll-mt-24 px-6 py-16 sm:py-20",
-            )}
-          >
-            <div className="mx-auto max-w-3xl space-y-6">
-              <h2 className="font-heading text-3xl font-semibold leading-snug tracking-tight text-foreground sm:text-4xl">
-                {index + 1}. {section.header}
-              </h2>
-              <div className="space-y-4">
+          return (
+            <section
+              key={section.id}
+              id={sectionAnchorId(section.id)}
+              data-meeting-section
+              className={cmSectionClassName}
+            >
+              <div
+                className={cn(
+                  cmSectionHeadClassName,
+                  cmGradientClass(headGradient),
+                )}
+              >
+                <h2 className="m-0 text-[clamp(1.2rem,2.5vw,1.6rem)] font-bold text-[#1f2937]">
+                  {index + 1}. {section.header}
+                </h2>
+              </div>
+              <div className={cmSectionBodyClassName}>
                 {paragraphs.map((paragraph) => (
                   <SectionParagraphView
                     key={paragraph.id}
@@ -94,26 +130,20 @@ export function MeetingMinutesView({
                   />
                 ))}
               </div>
-            </div>
-          </section>
-        );
-      })}
+            </section>
+          );
+        })}
 
-      {createdAtLabel && sorted.length > 0 && (
-        <footer className="border-t border-foreground/10 bg-white/60 px-6 py-8">
-          <div className="mx-auto max-w-3xl text-sm text-foreground/60">
-            {createdAtLabel}
-          </div>
-        </footer>
-      )}
-
-      <div className="no-print fixed bottom-6 right-4 z-40 flex flex-col items-end gap-2 sm:bottom-8 sm:right-6">
-        <BackToTopButton inline />
-        <FloatingSectionNav
-          sections={sections}
-          sectionAnchorId={sectionAnchorId}
-        />
+        {createdAtLabel && (
+          <footer className={cmFooterClassName}>{createdAtLabel}</footer>
+        )}
       </div>
-    </>
+
+      <BackToTopButton />
+      <FloatingSectionNav
+        sections={sections}
+        sectionAnchorId={sectionAnchorId}
+      />
+    </div>
   );
 }

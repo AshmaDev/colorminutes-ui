@@ -10,7 +10,16 @@ export const meetingStatusSchema = z.enum([
   "generated",
   "failed",
 ]);
-export const sectionColorSchema = z.enum(["peach", "pink", "lilac", "sage"]);
+export const sectionColorSchema = z.enum([
+  "blue",
+  "green",
+  "gold",
+  "pink",
+  "purple",
+  "teal",
+  "orange",
+  "red",
+]);
 export const spaceVisibilitySchema = z.enum(["private", "public", "protected"]);
 
 export const paragraphVariantSchema = z.enum([
@@ -27,6 +36,7 @@ export const sectionParagraphSchema = z.object({
   sortOrder: z.number().int(),
   content: z.string(),
   variant: paragraphVariantSchema,
+  color: sectionColorSchema,
   createdAt: z.string(),
   updatedAt: z.string(),
 });
@@ -190,6 +200,7 @@ export const putSectionsInputSchema = z.object({
               content: z.string().max(500_000),
               sortOrder: z.number().int().min(0),
               variant: paragraphVariantSchema.default("normal"),
+              color: sectionColorSchema.optional(),
             })
           )
           .min(1),

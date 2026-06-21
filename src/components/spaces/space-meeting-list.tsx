@@ -4,9 +4,12 @@ import Link from "next/link";
 import { useTranslations } from "next-intl";
 import type { PublicSpaceMeeting } from "@/lib/schemas";
 import {
-  sectionColorAtIndex,
-  sectionColorBackgroundClass,
-} from "@/lib/section-colors";
+  cmGradientClass,
+  cmSectionBodyClassName,
+  cmSectionClassName,
+  cmSectionHeadClassName,
+} from "@/lib/colorminutes-public-styles";
+import { sectionColorAtIndex } from "@/lib/section-colors";
 import { cn } from "@/lib/utils";
 
 type SpaceMeetingListProps = {
@@ -20,14 +23,14 @@ export function SpaceMeetingList({ meetings, className }: SpaceMeetingListProps)
 
   if (meetings.length === 0) {
     return (
-      <p className={cn("text-sm text-foreground/70", className)}>
+      <p className={cn("text-sm text-[#6b7280]", className)}>
         {t("noMeetings")}
       </p>
     );
   }
 
   return (
-    <ul className={cn("grid gap-4 sm:gap-6", className)}>
+    <ul className={cn("space-y-[18px]", className)}>
       {meetings.map((meeting, index) => {
         const href = `/m/${meeting.slug ?? meeting.id}`;
         const title = meeting.title ?? tm("untitled");
@@ -39,19 +42,15 @@ export function SpaceMeetingList({ meetings, className }: SpaceMeetingListProps)
 
         return (
           <li key={meeting.id}>
-            <Link
-              href={href}
-              className={cn(
-                sectionColorBackgroundClass[color],
-                "group flex items-center justify-between gap-4 rounded-3xl px-6 py-5 shadow-sm ring-1 ring-foreground/10 transition-transform hover:-translate-y-0.5 hover:shadow-md sm:px-8 sm:py-6",
-              )}
-            >
-              <span className="font-heading text-xl font-semibold text-foreground sm:text-2xl">
-                {title}
-              </span>
-              <span className="shrink-0 text-sm font-medium text-foreground/70">
+            <Link href={href} className={cn(cmSectionClassName, "block no-underline")}>
+              <div className={cn(cmSectionHeadClassName, cmGradientClass(color))}>
+                <h2 className="m-0 text-[clamp(1.2rem,2.5vw,1.6rem)] font-bold text-[#1f2937]">
+                  {title}
+                </h2>
+              </div>
+              <div className={cn(cmSectionBodyClassName, "text-[0.97rem] text-[#6b7280]")}>
                 {date}
-              </span>
+              </div>
             </Link>
           </li>
         );

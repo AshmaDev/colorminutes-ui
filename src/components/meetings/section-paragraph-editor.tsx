@@ -20,7 +20,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Label } from "@/components/ui/label";
-import type { ParagraphVariant } from "@/lib/schemas";
+import type { ParagraphVariant, SectionColor } from "@/lib/schemas";
 import {
   PARAGRAPH_VARIANTS,
   paragraphVariantDotClass,
@@ -46,6 +46,7 @@ export type EditableParagraph = {
   content: string;
   sortOrder: number;
   variant: ParagraphVariant;
+  color: SectionColor;
 };
 
 type SectionParagraphEditorProps = {

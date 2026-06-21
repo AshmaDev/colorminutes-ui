@@ -1,46 +1,53 @@
 import type { SectionColor } from "@/lib/schemas";
 
-export const SECTION_COLORS: SectionColor[] = ["peach", "pink", "lilac", "sage"];
+/** Section header cycle on colorminutes.com */
+export const SECTION_COLORS: SectionColor[] = [
+  "blue",
+  "teal",
+  "green",
+  "pink",
+  "purple",
+  "gold",
+  "orange",
+  "red",
+];
+
+/** Inner box cycle after the first paragraph (matches colorminutes.com) */
+export const BOX_COLOR_CYCLE: SectionColor[] = [
+  "blue",
+  "gold",
+  "orange",
+  "teal",
+  "green",
+  "red",
+  "purple",
+  "pink",
+];
 
 export function sectionColorAtIndex(index: number): SectionColor {
   return SECTION_COLORS[index % SECTION_COLORS.length]!;
 }
 
-export const sectionColorTextClass: Record<SectionColor, string> = {
-  peach: "text-brand-peach",
-  pink: "text-brand-pink",
-  lilac: "text-brand-lilac",
-  sage: "text-brand-sage",
-};
+export function paragraphColor(
+  sectionColor: SectionColor,
+  sectionIndex: number,
+  paragraphIndex: number,
+): SectionColor {
+  if (paragraphIndex === 0) {
+    return sectionColor;
+  }
+  return BOX_COLOR_CYCLE[(sectionIndex + paragraphIndex - 1) % BOX_COLOR_CYCLE.length]!;
+}
 
 export const sectionColorBarClass: Record<SectionColor, string> = {
-  peach: "bg-brand-peach/50",
-  pink: "bg-brand-pink/50",
-  lilac: "bg-brand-lilac/50",
-  sage: "bg-brand-sage/50",
-};
-
-export const sectionColorBackgroundClass: Record<SectionColor, string> = {
-  peach: "bg-brand-peach",
-  pink: "bg-brand-pink",
-  lilac: "bg-brand-lilac",
-  sage: "bg-brand-sage",
-};
-
-export const sectionColorNavButtonClass: Record<SectionColor, string> = {
-  peach:
-    "bg-brand-peach/90 text-foreground shadow-sm hover:bg-brand-peach ring-1 ring-foreground/10",
-  pink: "bg-brand-pink/90 text-foreground shadow-sm hover:bg-brand-pink ring-1 ring-foreground/10",
-  lilac:
-    "bg-brand-lilac/90 text-foreground shadow-sm hover:bg-brand-lilac ring-1 ring-foreground/10",
-  sage: "bg-brand-sage/90 text-foreground shadow-sm hover:bg-brand-sage ring-1 ring-foreground/10",
-};
-
-export const sectionColorNavButtonActiveClass: Record<SectionColor, string> = {
-  peach: "bg-brand-peach ring-2 ring-foreground/30",
-  pink: "bg-brand-pink ring-2 ring-foreground/30",
-  lilac: "bg-brand-lilac ring-2 ring-foreground/30",
-  sage: "bg-brand-sage ring-2 ring-foreground/30",
+  blue: "cm-gradient-blue",
+  green: "cm-gradient-green",
+  gold: "cm-gradient-gold",
+  pink: "cm-gradient-pink",
+  purple: "cm-gradient-purple",
+  teal: "cm-gradient-teal",
+  orange: "cm-gradient-orange",
+  red: "cm-gradient-red",
 };
 
 export function shortSectionLabel(header: string, maxLen = 22): string {

@@ -32,7 +32,7 @@ import {
   landingFieldClassName,
   landingSurfaceClassName,
 } from "@/lib/landing-styles";
-import { sectionColorAtIndex, sectionColorBarClass } from "@/lib/section-colors";
+import { paragraphColor, sectionColorAtIndex, sectionColorBarClass } from "@/lib/section-colors";
 import { isMeetingPublished } from "@/lib/meeting-publish";
 import { usePendingUndo } from "@/lib/use-pending-undo";
 import { cn } from "@/lib/utils";
@@ -61,12 +61,17 @@ type EditableSection = {
   paragraphs: EditableParagraph[];
 };
 
-function createEmptyParagraph(sortOrder: number): EditableParagraph {
+function createEmptyParagraph(
+  sortOrder: number,
+  sectionColor: MeetingSection["color"],
+  sectionIndex: number,
+): EditableParagraph {
   return {
     clientId: crypto.randomUUID(),
     content: "",
     sortOrder,
     variant: "normal",
+    color: paragraphColor(sectionColor, sectionIndex, sortOrder),
   };
 }
 
@@ -74,7 +79,7 @@ function toEditableSections(sections: MeetingSection[]): EditableSection[] {
   return sections
     .slice()
     .sort((a, b) => a.sortOrder - b.sortOrder)
-    .map((section) => ({
+    .map((section, sectionIndex) => ({
       clientId: section.id,
       id: section.id,
       header: section.header,
@@ -88,6 +93,7 @@ function toEditableSections(sections: MeetingSection[]): EditableSection[] {
           content: paragraph.content,
           sortOrder: paragraph.sortOrder,
           variant: paragraph.variant,
+          color: paragraph.color,
         })),
     }));
 }
@@ -105,6 +111,7 @@ function buildEditorSnapshot(title: string, sections: EditableSection[]): string
         content: paragraph.content,
         sortOrder: paragraphIndex,
         variant: paragraph.variant,
+        color: paragraph.color,
       })),
     })),
   });
@@ -172,16 +179,19 @@ export default function MeetingMinutesPage() {
   });
 
   const addSection = () => {
-    setSections((current) => [
-      ...current,
-      {
-        clientId: crypto.randomUUID(),
-        header: "",
-        sortOrder: current.length,
-        color: sectionColorAtIndex(current.length),
-        paragraphs: [createEmptyParagraph(0)],
-      },
-    ]);
+    setSections((current) => {
+      const sectionColor = sectionColorAtIndex(current.length);
+      return [
+        ...current,
+        {
+          clientId: crypto.randomUUID(),
+          header: "",
+          sortOrder: current.length,
+          color: sectionColor,
+          paragraphs: [createEmptyParagraph(0, sectionColor, current.length)],
+        },
+      ];
+    });
   };
 
   const removeSection = (index: number) => {
@@ -224,11 +234,12 @@ export default function MeetingMinutesPage() {
       const next = [...current];
       const section = next[sectionIndex];
       if (!section) return current;
+      const paragraphIndex = section.paragraphs.length;
       next[sectionIndex] = {
         ...section,
         paragraphs: [
           ...section.paragraphs,
-          createEmptyParagraph(section.paragraphs.length),
+          createEmptyParagraph(paragraphIndex, section.color, sectionIndex),
         ],
       };
       return next;
@@ -317,6 +328,7 @@ export default function MeetingMinutesPage() {
           content: paragraph.content,
           sortOrder: paragraphIndex,
           variant: paragraph.variant,
+          color: paragraph.color,
         })),
       })),
     });

@@ -14,6 +14,12 @@ import {
   spacesApi,
 } from "@/lib/api/spaces";
 import type { PublicSpace } from "@/lib/schemas";
+import {
+  cmHeroClassName,
+  cmPageClassName,
+  cmWrapClassName,
+} from "@/lib/colorminutes-public-styles";
+import { cn } from "@/lib/utils";
 
 type PublicSpacePageClientProps = {
   identifier: string;
@@ -81,17 +87,17 @@ export function PublicSpacePageClient({ identifier }: PublicSpacePageClientProps
   const showBackToTop = (space?.meetings.length ?? 0) > 4;
 
   return (
-    <div className="flex min-h-screen flex-col bg-background">
+    <div className="flex min-h-screen flex-col">
       <SiteHeader variant="landing" />
       <main className="flex-1">
         {isLoading && !space && !accessRequired && !membersOnly && (
-          <div className="mx-auto max-w-3xl px-6 py-16 sm:py-20">
-            <p className="text-sm text-foreground/70">{t("loading")}</p>
+          <div className={cn(cmPageClassName, "cm-page px-6 py-16")}>
+            <p className="text-sm text-[#6b7280]">{t("loading")}</p>
           </div>
         )}
 
         {error && !accessRequired && !membersOnly && (
-          <div className="mx-auto max-w-3xl px-6 py-16 sm:py-20">
+          <div className={cn(cmPageClassName, "cm-page px-6 py-16")}>
             <p className="text-sm text-destructive" role="alert">
               {error}
             </p>
@@ -99,52 +105,48 @@ export function PublicSpacePageClient({ identifier }: PublicSpacePageClientProps
         )}
 
         {accessRequired && (
-          <div className="mx-auto max-w-md px-6 py-16 sm:py-20">
-            <SpaceAccessGate
-              onSubmit={handlePasswordSubmit}
-              error={error}
-              isSubmitting={isSubmitting}
-            />
+          <div className={cn(cmPageClassName, "cm-page px-6 py-16")}>
+            <div className="mx-auto max-w-md">
+              <SpaceAccessGate
+                onSubmit={handlePasswordSubmit}
+                error={error}
+                isSubmitting={isSubmitting}
+              />
+            </div>
           </div>
         )}
 
         {membersOnly && (
-          <div className="mx-auto max-w-md space-y-4 px-6 py-16 text-center sm:py-20">
-            <h1 className="font-heading text-2xl font-semibold tracking-tight">
-              {t("membersOnly.title")}
-            </h1>
-            <p className="text-sm text-foreground/70">{t("membersOnly.description")}</p>
-            <ButtonLink href={`/login?from=${encodeURIComponent(`/s/${identifier}`)}`}>
-              {t("membersOnly.signIn")}
-            </ButtonLink>
+          <div className={cn(cmPageClassName, "cm-page px-6 py-16 text-center")}>
+            <div className="mx-auto max-w-md space-y-4">
+              <h1 className="text-2xl font-bold tracking-tight text-[#1f2937]">
+                {t("membersOnly.title")}
+              </h1>
+              <p className="text-sm text-[#6b7280]">{t("membersOnly.description")}</p>
+              <ButtonLink href={`/login?from=${encodeURIComponent(`/s/${identifier}`)}`}>
+                {t("membersOnly.signIn")}
+              </ButtonLink>
+            </div>
           </div>
         )}
 
         {space && (
-          <>
-            <header className="bg-brand-sky px-6 py-16 text-center sm:py-20">
-              <div className="mx-auto max-w-3xl space-y-3">
-                <h1 className="font-heading text-4xl font-semibold leading-tight tracking-tight text-foreground sm:text-5xl">
+          <div className={cn(cmPageClassName, "cm-page")} id="top">
+            <div className={cmWrapClassName}>
+              <section className={cmHeroClassName}>
+                <h1 className="relative z-[1] m-0 text-[clamp(1.8rem,4vw,3rem)] font-bold leading-[1.1] tracking-[-0.02em] text-[#1f2937]">
                   {space.name}
                 </h1>
-                <p className="text-sm font-medium uppercase tracking-wider text-foreground/70">
+                <p className="relative z-[1] mt-2.5 text-base text-[#6b7280]">
                   {t("publishedMeetings")}
                 </p>
-              </div>
-            </header>
+              </section>
 
-            <section className="px-6 py-12 sm:py-16">
-              <div className="mx-auto max-w-3xl">
-                <SpaceMeetingList meetings={space.meetings} />
-              </div>
-            </section>
+              <SpaceMeetingList meetings={space.meetings} />
+            </div>
 
-            {showBackToTop && (
-              <div className="no-print fixed bottom-6 right-4 z-40 sm:bottom-8 sm:right-6">
-                <BackToTopButton inline />
-              </div>
-            )}
-          </>
+            {showBackToTop && <BackToTopButton />}
+          </div>
         )}
       </main>
       <SiteFooter variant="landing" />
@@ -156,7 +158,7 @@ function ButtonLink({ href, children }: { href: string; children: React.ReactNod
   return (
     <Link
       href={href}
-      className="inline-flex h-10 items-center justify-center rounded-full bg-foreground px-6 text-sm font-medium text-background transition-opacity hover:opacity-90"
+      className="inline-flex h-10 items-center justify-center rounded-full bg-[rgba(17,24,39,0.92)] px-6 text-sm font-bold text-white shadow-[0_12px_26px_rgba(17,24,39,0.16)] transition-opacity hover:opacity-90"
     >
       {children}
     </Link>

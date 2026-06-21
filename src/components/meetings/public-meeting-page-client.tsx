@@ -28,7 +28,7 @@ function PublicMeetingShell({
   className?: string;
 }) {
   return (
-    <div className={cn("flex min-h-screen flex-col bg-background", className)}>
+    <div className={cn("flex min-h-screen flex-col", className)}>
       <SiteHeader variant="landing" />
       <main className="flex-1">{children}</main>
       <SiteFooter variant="landing" />
@@ -105,8 +105,8 @@ export function PublicMeetingPageClient({ identifier }: PublicMeetingPageClientP
   if (isLoading && !meeting && !accessRequired && !membersOnly) {
     return (
       <PublicMeetingShell>
-        <div className="mx-auto max-w-3xl px-6 py-16 sm:py-20">
-          <p className="text-sm text-foreground/70">{t("loadingMeeting")}</p>
+        <div className="cm-public cm-page px-6 py-16">
+          <p className="text-sm text-[#6b7280]">{t("loadingMeeting")}</p>
         </div>
       </PublicMeetingShell>
     );
@@ -115,7 +115,7 @@ export function PublicMeetingPageClient({ identifier }: PublicMeetingPageClientP
   if (error && !accessRequired && !membersOnly && !meeting) {
     return (
       <PublicMeetingShell>
-        <div className="mx-auto max-w-3xl px-6 py-16 sm:py-20">
+        <div className="cm-public cm-page px-6 py-16">
           <p className="text-sm text-destructive" role="alert">
             {error}
           </p>
@@ -127,27 +127,31 @@ export function PublicMeetingPageClient({ identifier }: PublicMeetingPageClientP
   return (
     <PublicMeetingShell>
       {accessRequired && (
-        <div className="mx-auto max-w-md px-6 py-16 sm:py-20">
-          <SpaceAccessGate
-            onSubmit={handlePasswordSubmit}
-            error={error}
-            isSubmitting={isSubmitting}
-          />
+        <div className="cm-public cm-page px-6 py-16">
+          <div className="mx-auto max-w-md">
+            <SpaceAccessGate
+              onSubmit={handlePasswordSubmit}
+              error={error}
+              isSubmitting={isSubmitting}
+            />
+          </div>
         </div>
       )}
 
       {membersOnly && (
-        <div className="mx-auto max-w-md space-y-4 px-6 py-16 text-center sm:py-20">
-          <h1 className="font-heading text-2xl font-semibold tracking-tight">
-            {ts("membersOnly.title")}
-          </h1>
-          <p className="text-sm text-foreground/70">{ts("membersOnly.description")}</p>
-          <Link
-            href={`/login?from=${encodeURIComponent(`/m/${identifier}`)}`}
-            className="inline-flex h-10 items-center justify-center rounded-full bg-foreground px-6 text-sm font-medium text-background transition-opacity hover:opacity-90"
-          >
-            {ts("membersOnly.signIn")}
-          </Link>
+        <div className="cm-public cm-page px-6 py-16 text-center">
+          <div className="mx-auto max-w-md space-y-4">
+            <h1 className="text-2xl font-bold tracking-tight text-[#1f2937]">
+              {ts("membersOnly.title")}
+            </h1>
+            <p className="text-sm text-[#6b7280]">{ts("membersOnly.description")}</p>
+            <Link
+              href={`/login?from=${encodeURIComponent(`/m/${identifier}`)}`}
+              className="inline-flex h-10 items-center justify-center rounded-full bg-[rgba(17,24,39,0.92)] px-6 text-sm font-bold text-white shadow-[0_12px_26px_rgba(17,24,39,0.16)] transition-opacity hover:opacity-90"
+            >
+              {ts("membersOnly.signIn")}
+            </Link>
+          </div>
         </div>
       )}
 

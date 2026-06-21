@@ -46,7 +46,7 @@ export default function MeetingPreviewPage() {
   }
 
   return (
-    <AppPageBackground variant="preview" className="bg-background">
+    <AppPageBackground variant="preview" className="bg-[#f5f7fb]">
       <div className="border-b border-foreground/10 bg-white/60 px-6 py-4">
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-4">
           <Link
