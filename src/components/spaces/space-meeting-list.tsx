@@ -6,6 +6,7 @@ import type { PublicSpaceMeeting } from "@/lib/schemas";
 import {
   cmContentSectionsClassName,
   cmGradientClass,
+  cmMeetingDateClassName,
   cmSectionBodyClassName,
   cmSectionClassName,
   cmSectionHeadClassName,
@@ -48,16 +49,23 @@ export function SpaceMeetingList({
 
         return (
           <li key={meeting.id}>
-            <Link href={href} className={cn(cmSectionClassName, "block no-underline")}>
+            <article className={cmSectionClassName}>
               <div className={cn(cmSectionHeadClassName, cmGradientClass(color))}>
                 <h2 className="m-0 text-[clamp(1.2rem,2.5vw,1.6rem)] font-bold text-[#1f2937]">
                   {title}
                 </h2>
               </div>
-              <div className={cn(cmSectionBodyClassName, "text-[0.97rem] text-[#6b7280]")}>
-                <p className="m-0">{date}</p>
+              <div className={cn(cmSectionBodyClassName, "space-y-3")}>
+                <div className={cn(cmMeetingDateClassName, "mt-0")}>{date}</div>
+
+                {meeting.description && (
+                  <p className="m-0 line-clamp-3 text-[0.97rem] leading-relaxed text-[#374151]">
+                    {meeting.description}
+                  </p>
+                )}
+
                 {meeting.tags.length > 0 && (
-                  <div className="cm-badge-row mt-3">
+                  <div className="cm-badge-row !mt-0">
                     {meeting.tags.map((tag) => (
                       <span key={tag.slug} className="cm-badge">
                         {tag.emoji ? `${tag.emoji} ` : ""}
@@ -66,8 +74,16 @@ export function SpaceMeetingList({
                     ))}
                   </div>
                 )}
+
+                <Link
+                  href={href}
+                  className="inline-flex items-center gap-1.5 text-sm font-bold text-[#1d4ed8] no-underline transition-opacity hover:opacity-80"
+                >
+                  {t("readMore")}
+                  <span aria-hidden>→</span>
+                </Link>
               </div>
-            </Link>
+            </article>
           </li>
         );
       })}

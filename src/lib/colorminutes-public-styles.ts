@@ -25,7 +25,7 @@ export const cmMiniCardClassName =
   "rounded-[20px] border border-[rgba(229,231,235,0.9)] bg-[rgba(255,255,255,0.7)] p-3.5 backdrop-blur-[6px]";
 
 export const cmMeetingDateClassName =
-  "relative z-[1] mt-2.5 inline-block rounded-full border border-[rgba(229,231,235,0.9)] bg-[rgba(255,255,255,0.8)] px-3 py-2 text-[0.92rem] text-[#374151]";
+  "inline-block rounded-full border border-[rgba(229,231,235,0.9)] bg-[rgba(255,255,255,0.8)] px-3 py-2 text-[0.92rem] text-[#374151]";
 
 export const cmDownloadBtnClassName =
   "no-print inline-flex items-center justify-center gap-2 rounded-full bg-[rgba(17,24,39,0.92)] px-4 py-3 text-sm font-bold text-white shadow-[0_12px_26px_rgba(17,24,39,0.16)] transition-opacity hover:opacity-90";

@@ -120,6 +120,7 @@ export const publicSpaceMeetingSchema = z.object({
   slug: z.string().nullable(),
   publishedAt: z.string().nullable(),
   createdAt: z.string(),
+  description: z.string(),
   tags: z.array(sectionTagSchema),
   searchText: z.string(),
 });

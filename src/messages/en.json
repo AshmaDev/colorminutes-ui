@@ -434,6 +434,7 @@
     "publishedMeetings": "Published meetings",
     "noMeetings": "No published meetings yet.",
     "noMeetingsMatch": "No meetings match your search. Try different keywords.",
+    "readMore": "Read more",
     "visibility": {
       "private": {
         "title": "Private",

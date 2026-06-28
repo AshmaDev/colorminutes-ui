@@ -202,18 +202,21 @@
   border: 1px solid rgba(255, 255, 255, 0.8);
   box-shadow: 0 14px 40px rgba(26, 39, 68, 0.12);
   padding: 28px 20px 22px;
+  overflow: hidden;
+  isolation: isolate;
 }
 
 .cm-hero::after {
   content: "";
   position: absolute;
-  right: -40px;
-  top: -40px;
-  width: 160px;
-  height: 160px;
+  right: 12px;
+  top: 12px;
+  z-index: 0;
+  width: 112px;
+  height: 112px;
   background: linear-gradient(135deg, rgba(191, 219, 254, 0.55), rgba(249, 168, 212, 0.35));
   border-radius: 50%;
-  filter: blur(6px);
+  filter: blur(10px);
   pointer-events: none;
 }
 
@@ -297,38 +300,57 @@
   margin-top: 14px;
 }
 
-.cm-search-input {
-  width: 100%;
-  padding: 13px 18px 13px 46px;
+.cm-search-field {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 48px;
+  padding: 0 14px 0 16px;
   border-radius: 999px;
   border: 1px solid rgba(229, 231, 235, 0.9);
   background: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 8px 20px rgba(17, 24, 39, 0.08);
+}
+
+.cm-search-field:focus-within {
+  outline: 2px solid rgba(191, 219, 254, 0.9);
+  outline-offset: 0;
+}
+
+.cm-search-input {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  background: transparent;
+  padding: 12px 0;
   font-size: 1rem;
+  line-height: 1.4;
   font-family: inherit;
   color: #1f2937;
-  box-shadow: 0 8px 20px rgba(17, 24, 39, 0.08);
   outline: none;
 }
 
-.cm-search-input:focus {
-  outline: 2px solid rgba(191, 219, 254, 0.9);
+.cm-search-input::placeholder {
+  color: #9ca3af;
+}
+
+.cm-search-input::-webkit-search-cancel-button {
+  display: none;
 }
 
 .cm-search-icon {
-  position: absolute;
-  left: 16px;
-  top: 50%;
-  transform: translateY(-50%);
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   color: #6b7280;
-  font-size: 1.1rem;
+  font-size: 1rem;
+  line-height: 1;
   pointer-events: none;
 }
 
 .cm-search-clear {
-  position: absolute;
-  right: 14px;
-  top: 50%;
-  transform: translateY(-50%);
+  flex-shrink: 0;
   background: rgba(107, 114, 128, 0.15);
   border: none;
   border-radius: 999px;
@@ -343,7 +365,7 @@
 }
 
 .cm-search-clear.visible {
-  display: flex;
+  display: inline-flex;
 }
 
 .cm-search-results-info {
