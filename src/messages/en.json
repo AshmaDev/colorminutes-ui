@@ -263,6 +263,8 @@
     "generatingBanner": "Generating color-coded minutes from your content…",
     "generateColorMinutes": "Generate Color Minutes",
     "generatingColorMinutes": "Generating…",
+    "generateError": "Could not start generation. Please try again.",
+    "longContentHint": "Very long transcripts may take longer to generate; consider trimming before generating.",
     "openMinutesEditor": "Open minutes editor",
     "saveAll": "Save",
     "preview": "Preview",

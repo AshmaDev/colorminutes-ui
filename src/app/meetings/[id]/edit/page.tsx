@@ -7,6 +7,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
 import { ArrowLeft, FileAudio, FileText, Loader2, Mic } from "lucide-react";
 import { meetingsApi } from "@/lib/api/meetings";
+import { parseApiError } from "@/lib/api/client";
 import { AppContainer } from "@/components/layout/app-container";
 import { AppPageBackground } from "@/components/layout/app-page-background";
 import { Button } from "@/components/ui/button";
@@ -21,6 +22,8 @@ import {
   landingSurfaceClassName,
 } from "@/lib/landing-styles";
 import { cn } from "@/lib/utils";
+
+const LONG_CONTENT_HINT_CHARS = 60_000;
 
 function formatBytes(bytes: number): string {
   if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
@@ -88,11 +91,19 @@ export default function EditMeetingPage() {
     },
   });
 
+  const [generateError, setGenerateError] = useState<string | null>(null);
+
   const generateMutation = useMutation({
     mutationFn: () => meetingsApi.generate(meetingId),
+    onMutate: () => {
+      setGenerateError(null);
+    },
     onSuccess: (updated) => {
       queryClient.setQueryData(["meetings", meetingId], updated);
       queryClient.invalidateQueries({ queryKey: ["meetings"] });
+    },
+    onError: async (error) => {
+      setGenerateError(await parseApiError(error));
     },
   });
 
@@ -128,6 +139,7 @@ export default function EditMeetingPage() {
       onBack={() => router.push("/meetings")}
       onSaveDraft={() => updateMutation.mutate({ content })}
       onGenerate={() => generateMutation.mutate()}
+      generateError={generateError}
       isSaving={updateMutation.isPending}
       isGenerating={generateMutation.isPending || meeting.status === "generating"}
     />
@@ -142,6 +154,7 @@ function EditMeetingContent({
   onBack,
   onSaveDraft,
   onGenerate,
+  generateError,
   isSaving,
   isGenerating,
 }: {
@@ -152,6 +165,7 @@ function EditMeetingContent({
   onBack: () => void;
   onSaveDraft: () => void;
   onGenerate: () => void;
+  generateError: string | null;
   isSaving: boolean;
   isGenerating: boolean;
 }) {
@@ -176,6 +190,8 @@ function EditMeetingContent({
     (meeting.status === "ready" || meeting.status === "failed") &&
     content.trim().length > 0 &&
     meeting.sections.length === 0;
+
+  const showLongContentHint = content.length > LONG_CONTENT_HINT_CHARS;
 
   const showContentEditor =
     meeting.status === "ready" || meeting.status === "failed";
@@ -288,7 +304,15 @@ function EditMeetingContent({
                   rows={16}
                   className={landingFieldClassName}
                 />
+                {showLongContentHint && (
+                  <p className="text-sm text-foreground/70">{t("longContentHint")}</p>
+                )}
               </div>
+              {generateError && (
+                <p className="rounded-2xl border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive">
+                  {generateError}
+                </p>
+              )}
               <div className="flex flex-wrap items-center justify-end gap-3">
                 {savedMessage && (
                   <span className="text-sm text-foreground/70" role="status">

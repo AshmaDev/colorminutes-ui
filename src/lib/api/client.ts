@@ -4,6 +4,7 @@ import { clearToken, getApiUrl, getToken } from "./token";
 
 export const api = ky.create({
   prefix: getApiUrl(),
+  timeout: 60_000,
   hooks: {
     beforeRequest: [
       ({ request }) => {
