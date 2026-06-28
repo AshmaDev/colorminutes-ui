@@ -72,3 +72,30 @@ export function shortSectionLabel(header: string, maxLen = 22): string {
 
   return `${label.slice(0, maxLen - 1)}…`;
 }
+
+export function navLabelFromHeader(header: string, maxWords = 3): string {
+  const words = header.trim().split(/\s+/).filter(Boolean);
+  return words.slice(0, maxWords).join(" ");
+}
+
+export function sectionNavLabel(
+  section: { header: string; navLabel: string | null },
+): string {
+  return section.navLabel?.trim() || navLabelFromHeader(section.header);
+}
+
+export function meetingMonthChip(date: string | null | undefined): string | null {
+  if (!date) {
+    return null;
+  }
+
+  const parsed = new Date(date);
+  if (Number.isNaN(parsed.getTime())) {
+    return null;
+  }
+
+  return parsed.toLocaleDateString(undefined, {
+    month: "short",
+    year: "numeric",
+  });
+}

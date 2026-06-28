@@ -65,10 +65,18 @@ export const meetingFileSchema = z.object({
   createdAt: z.string(),
 });
 
+export const sectionTagSchema = z.object({
+  slug: z.string(),
+  label: z.string(),
+  emoji: z.string(),
+});
+
 export const meetingSectionSchema = z.object({
   id: z.string().uuid(),
   sortOrder: z.number().int(),
   header: z.string(),
+  navLabel: z.string().nullable(),
+  tag: sectionTagSchema.nullable(),
   color: sectionColorSchema,
   paragraphs: z.array(sectionParagraphSchema).min(1),
   createdAt: z.string(),
@@ -112,6 +120,8 @@ export const publicSpaceMeetingSchema = z.object({
   slug: z.string().nullable(),
   publishedAt: z.string().nullable(),
   createdAt: z.string(),
+  tags: z.array(sectionTagSchema),
+  searchText: z.string(),
 });
 
 export const publicSpaceSchema = z.object({
@@ -193,6 +203,8 @@ export const putSectionsInputSchema = z.object({
         header: z.string().min(1).max(200),
         sortOrder: z.number().int().min(0),
         color: sectionColorSchema.optional(),
+        navLabel: z.string().max(60).nullable().optional(),
+        tag: sectionTagSchema.nullable().optional(),
         paragraphs: z
           .array(
             z.object({
@@ -241,6 +253,7 @@ export type Meeting = z.infer<typeof meetingSchema>;
 export type PublicMeeting = z.infer<typeof publicMeetingSchema>;
 export type PublicSpace = z.infer<typeof publicSpaceSchema>;
 export type PublicSpaceMeeting = z.infer<typeof publicSpaceMeetingSchema>;
+export type SectionTag = z.infer<typeof sectionTagSchema>;
 export type MeetingSection = z.infer<typeof meetingSectionSchema>;
 export type SectionParagraph = z.infer<typeof sectionParagraphSchema>;
 export type ParagraphVariant = z.infer<typeof paragraphVariantSchema>;

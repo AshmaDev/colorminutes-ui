@@ -1,10 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslations } from "next-intl";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
+import { MinutesSearchBar } from "@/components/meetings/public/minutes-search-bar";
+import { TagFilterChips } from "@/components/meetings/public/tag-filter-chips";
 import { SpaceAccessGate } from "@/components/spaces/space-access-gate";
 import { SpaceMeetingList } from "@/components/spaces/space-meeting-list";
 import { BackToTopButton } from "@/components/ui/back-to-top-button";
@@ -16,9 +18,15 @@ import {
 import type { PublicSpace } from "@/lib/schemas";
 import {
   cmHeroClassName,
+  cmMiniCardClassName,
   cmPageClassName,
   cmWrapClassName,
 } from "@/lib/colorminutes-public-styles";
+import {
+  collectTagsFromMeetings,
+  meetingMatchesSearch,
+  meetingMatchesTag,
+} from "@/lib/minutes-filter";
 import { cn } from "@/lib/utils";
 
 type PublicSpacePageClientProps = {
@@ -27,12 +35,15 @@ type PublicSpacePageClientProps = {
 
 export function PublicSpacePageClient({ identifier }: PublicSpacePageClientProps) {
   const t = useTranslations("spaces");
+  const tm = useTranslations("meetings");
   const [space, setSpace] = useState<PublicSpace | null>(null);
   const [accessRequired, setAccessRequired] = useState(false);
   const [membersOnly, setMembersOnly] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [activeTag, setActiveTag] = useState<string | null>(null);
 
   const loadSpace = useCallback(
     async (accessToken?: string | null) => {
@@ -41,7 +52,7 @@ export function PublicSpacePageClient({ identifier }: PublicSpacePageClientProps
       try {
         const data = await spacesApi.getPublic(
           identifier,
-          accessToken ?? getStoredSpaceAccessToken(identifier)
+          accessToken ?? getStoredSpaceAccessToken(identifier),
         );
         setSpace(data);
         setAccessRequired(false);
@@ -63,7 +74,7 @@ export function PublicSpacePageClient({ identifier }: PublicSpacePageClientProps
         setIsLoading(false);
       }
     },
-    [identifier]
+    [identifier],
   );
 
   useEffect(() => {
@@ -84,7 +95,24 @@ export function PublicSpacePageClient({ identifier }: PublicSpacePageClientProps
     }
   };
 
-  const showBackToTop = (space?.meetings.length ?? 0) > 4;
+  const allTags = useMemo(
+    () => collectTagsFromMeetings(space?.meetings ?? []),
+    [space?.meetings],
+  );
+
+  const filteredMeetings = useMemo(() => {
+    if (!space) {
+      return [];
+    }
+
+    return space.meetings.filter(
+      (meeting) =>
+        meetingMatchesSearch(meeting, searchQuery) &&
+        meetingMatchesTag(meeting, activeTag),
+    );
+  }, [space, searchQuery, activeTag]);
+
+  const showBackToTop = filteredMeetings.length > 4;
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -137,12 +165,58 @@ export function PublicSpacePageClient({ identifier }: PublicSpacePageClientProps
                 <h1 className="relative z-[1] m-0 text-[clamp(1.8rem,4vw,3rem)] font-bold leading-[1.1] tracking-[-0.02em] text-[#1f2937]">
                   {space.name}
                 </h1>
-                <p className="relative z-[1] mt-2.5 text-base text-[#6b7280]">
-                  {t("publishedMeetings")}
+                <p className="relative z-[1] mt-2.5 max-w-[760px] text-base text-[#6b7280]">
+                  {t("hubSubtitle")}
                 </p>
+
+                <div className="relative z-[1] mt-[18px] grid grid-cols-1 gap-3.5 md:grid-cols-3">
+                  <div className={cmMiniCardClassName}>
+                    <strong className="mb-1.5 block text-[0.96rem]">
+                      {tm("readingTipLabel")}
+                    </strong>
+                    <span className="text-[0.92rem] text-[#6b7280]">
+                      {t("hubReadingTip")}
+                    </span>
+                  </div>
+                  <div className={cmMiniCardClassName}>
+                    <strong className="mb-1.5 block text-[0.96rem]">
+                      {tm("goodFollowUpLabel")}
+                    </strong>
+                    <span className="text-[0.92rem] text-[#6b7280]">
+                      {tm("goodFollowUp")}
+                    </span>
+                  </div>
+                  <div className={cmMiniCardClassName}>
+                    <strong className="mb-1.5 block text-[0.96rem]">
+                      {t("meetingsLabel")}
+                    </strong>
+                    <span className="text-[0.92rem] text-[#6b7280]">
+                      {t("publishedMeetingsCount", { count: space.meetings.length })}
+                    </span>
+                  </div>
+                </div>
+
+                <MinutesSearchBar
+                  value={searchQuery}
+                  onChange={setSearchQuery}
+                  matchCount={filteredMeetings.length}
+                />
+
+                <TagFilterChips
+                  tags={allTags}
+                  activeTag={activeTag}
+                  onChange={setActiveTag}
+                />
               </section>
 
-              <SpaceMeetingList meetings={space.meetings} />
+              <SpaceMeetingList
+                meetings={filteredMeetings}
+                emptyMessage={
+                  space.meetings.length === 0
+                    ? t("noMeetings")
+                    : t("noMeetingsMatch")
+                }
+              />
             </div>
 
             {showBackToTop && <BackToTopButton />}

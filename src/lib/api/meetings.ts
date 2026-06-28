@@ -38,6 +38,8 @@ export type SectionInput = {
   header: string;
   sortOrder: number;
   color?: SectionColor;
+  navLabel?: string | null;
+  tag?: { slug: string; label: string; emoji: string } | null;
   paragraphs: SectionParagraphInput[];
 };
 

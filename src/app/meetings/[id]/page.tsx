@@ -56,6 +56,8 @@ type EditableSection = {
   clientId: string;
   id?: string;
   header: string;
+  navLabel: string | null;
+  tag: MeetingSection["tag"];
   sortOrder: number;
   color: MeetingSection["color"];
   paragraphs: EditableParagraph[];
@@ -83,6 +85,8 @@ function toEditableSections(sections: MeetingSection[]): EditableSection[] {
       clientId: section.id,
       id: section.id,
       header: section.header,
+      navLabel: section.navLabel,
+      tag: section.tag,
       sortOrder: section.sortOrder,
       color: section.color,
       paragraphs: [...section.paragraphs]
@@ -104,6 +108,8 @@ function buildEditorSnapshot(title: string, sections: EditableSection[]): string
     sections: sections.map((section, index) => ({
       id: section.id,
       header: section.header.trim(),
+      navLabel: section.navLabel,
+      tag: section.tag,
       sortOrder: index,
       color: section.color,
       paragraphs: section.paragraphs.map((paragraph, paragraphIndex) => ({
@@ -186,6 +192,8 @@ export default function MeetingMinutesPage() {
         {
           clientId: crypto.randomUUID(),
           header: "",
+          navLabel: null,
+          tag: null,
           sortOrder: current.length,
           color: sectionColor,
           paragraphs: [createEmptyParagraph(0, sectionColor, current.length)],
@@ -321,6 +329,8 @@ export default function MeetingMinutesPage() {
       sections: sections.map((section, index) => ({
         id: section.id,
         header: section.header.trim() || t("defaultSectionHeader"),
+        navLabel: section.navLabel,
+        tag: section.tag,
         sortOrder: index,
         color: section.color,
         paragraphs: section.paragraphs.map((paragraph, paragraphIndex) => ({
@@ -468,6 +478,21 @@ export default function MeetingMinutesPage() {
                     placeholder={t("defaultSectionHeader")}
                     className={landingFieldClassName}
                   />
+                  {(section.navLabel || section.tag) && (
+                    <p className="text-xs text-foreground/60">
+                      {section.navLabel && (
+                        <span>
+                          {t("navLabelDisplay", { label: section.navLabel })}
+                        </span>
+                      )}
+                      {section.navLabel && section.tag && " · "}
+                      {section.tag && (
+                        <span>
+                          {section.tag.emoji} {section.tag.label}
+                        </span>
+                      )}
+                    </p>
+                  )}
                 </div>
                 <div className="space-y-3">
                   <Label>{t("sectionParagraphs")}</Label>

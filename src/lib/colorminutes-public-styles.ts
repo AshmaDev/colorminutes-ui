@@ -14,7 +14,7 @@ export const cmSectionClassName =
 
 export const cmContentSectionsClassName = "mt-10 flex flex-col gap-8";
 
-export const cmSectionHeadClassName = "px-[18px] pb-4 pt-[18px] max-md:px-3.5";
+export const cmSectionHeadClassName = "px-[18px] pb-2.5 pt-[18px] max-md:px-3.5";
 
 export const cmSectionBodyClassName = "px-[18px] pb-[18px] pt-2 max-md:px-3.5";
 

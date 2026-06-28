@@ -15,17 +15,22 @@ import { cn } from "@/lib/utils";
 
 type SpaceMeetingListProps = {
   meetings: PublicSpaceMeeting[];
+  emptyMessage?: string;
   className?: string;
 };
 
-export function SpaceMeetingList({ meetings, className }: SpaceMeetingListProps) {
+export function SpaceMeetingList({
+  meetings,
+  emptyMessage,
+  className,
+}: SpaceMeetingListProps) {
   const t = useTranslations("spaces");
   const tm = useTranslations("meetings");
 
   if (meetings.length === 0) {
     return (
-      <p className={cn("text-sm text-[#6b7280]", className)}>
-        {t("noMeetings")}
+      <p className={cn("cm-no-results show text-sm text-[#6b7280]", className)}>
+        {emptyMessage ?? t("noMeetings")}
       </p>
     );
   }
@@ -50,7 +55,17 @@ export function SpaceMeetingList({ meetings, className }: SpaceMeetingListProps)
                 </h2>
               </div>
               <div className={cn(cmSectionBodyClassName, "text-[0.97rem] text-[#6b7280]")}>
-                {date}
+                <p className="m-0">{date}</p>
+                {meeting.tags.length > 0 && (
+                  <div className="cm-badge-row mt-3">
+                    {meeting.tags.map((tag) => (
+                      <span key={tag.slug} className="cm-badge">
+                        {tag.emoji ? `${tag.emoji} ` : ""}
+                        {tag.label}
+                      </span>
+                    ))}
+                  </div>
+                )}
               </div>
             </Link>
           </li>
